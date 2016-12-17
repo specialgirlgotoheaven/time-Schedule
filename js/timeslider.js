@@ -36,7 +36,7 @@ if (typeof jQuery === 'undefined') {
         this.time_caret = null;
         this.steps_by_minutes = [1, 2, 5, 10, 15, 20, 30, 60, 120, 180, 240, 360, 720, 1440];
         this.gt_height = 0;
-
+        this.mark = 0;
         this.init(element, options);
         return this;
     };
@@ -52,6 +52,7 @@ if (typeof jQuery === 'undefined') {
         update_timestamp_interval: 1000,        // 时间同步时间间隔 interval for updating current time
         update_interval: 1000,                  // interval for updating elements
         show_ms: false,                         //是否显示微秒 whether to show the milliseconds?
+        show_time_cursor:true,                  //是否显示当前时间的红色游标
         init_cells: null,                       //list of time cells or function
         ruler_enable_move: true,
         timecell_enable_move: true,
@@ -97,9 +98,11 @@ if (typeof jQuery === 'undefined') {
             '<div class="bg"></div>' +
             '<div class="bg-event' + (this.options.ruler_enable_move ? '' : 'disable-move') + '"></div>'
         );
-
-        this.add_time_caret();
         this.add_graduations();
+        if(this.options.show_time_cursor){
+            this.add_time_caret();
+        }
+
         if (this.options.init_cells) {
             if (typeof this.options.init_cells == 'function') {
                 this.options.init_cells.bind(this).call();
@@ -241,10 +244,14 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.add_events = function() {
         var _this = this;
-        window.setInterval(this.set_current_timestamp(), this.options['update_timestamp_interval']);
-        window.setInterval(this.set_running_elements(), this.options['update_interval']);
-        $('body').mouseup(this.mouse_up_event());
-        $('body').mousemove(this.cursor_moving_event());
+        if(_this.options.show_time_cursor){
+            window.setInterval(this.set_current_timestamp(), this.options['update_timestamp_interval']);
+            window.setInterval(this.set_running_elements(), this.options['update_interval']);
+        }
+        //$('body').mouseup(this.mouse_up_event());
+        _this.$element.mouseup(this.mouse_up_event());
+        //$('body').mousemove(this.cursor_moving_event());
+        _this.$element.mousemove(this.cursor_moving_event());
         if (this.options.ruler_enable_move) {
             this.$ruler.find('.bg-event').mousedown(this.ruler_mouse_down_event());
         }
@@ -412,6 +419,19 @@ if (typeof jQuery === 'undefined') {
         if (typeof this.options.on_remove_timecell_callback == 'function') {
             this.options.on_remove_timecell_callback(timecell_id, start, stop);
         }
+    };
+
+    TimeSlider.prototype.get_all_timecells=function(){
+        var timecells = [];
+        var $timecells = this.$ruler.children('.timecell');
+        $timecells.each(function (index) {
+            timecells.push({
+                _id: $(this).attr('id'),
+                start: parseInt($(this).attr('start_timestamp')),
+                stop: $(this).attr('stop_timestamp') ? parseInt($(this).attr('stop_timestamp')) : null
+            });
+        });
+        return timecells;
     };
 
     TimeSlider.prototype.remove_all_timecells = function() {
@@ -979,6 +999,15 @@ if (typeof jQuery === 'undefined') {
                             }
                         }
                         break;
+                    default://画方块的情况
+                        {//add_cell    //$('#slider123').data().timeslider
+                            //_this.mark +=10000000;
+                            //_this.add_timecell({_id:"vccc2"+_this.mark,start:new Date().getTime()+_this.mark,stop:new Date().getTime()+5000000+_this.mark});
+
+                            
+
+                        }
+                        break;
                 }
                 _this.clicked_on = null;
             }
@@ -1010,6 +1039,9 @@ if (typeof jQuery === 'undefined') {
             else {
                 if (typeof options == 'string') {
                     switch (options) {
+                        case 'get_all':
+                           data.get_all_timecells();
+                            break;
                         case 'add':
                             data.add_timecell(timecell);
                             break;
@@ -1017,19 +1049,15 @@ if (typeof jQuery === 'undefined') {
                         case 'toggle':
                             data.toggle_timecell(timecell);
                             break;
-
                         case 'edit':
                             data.edit_timecell(timecell);
                             break;
-
                         case 'remove':
                             data.remove_timecell(timecell);
                             break;
-
                         case 'remove_all':
                             data.remove_all_timecells();
                             break;
-
                         case 'new_start_timestamp':
                             data.set_new_start_timestamp(timecell);
                             break;
@@ -1051,4 +1079,8 @@ if (typeof jQuery === 'undefined') {
         $.fn.TimeSlider = old;
         return this;
     };
+
+
+    //$('#slider456').data().timeslider.get_all_timecells();
+    //$('#slider123').TimeSlider("add",{_id:"vccc2",start:new Date().getTime(),stop:new Date().getTime()+1000000})
 })(jQuery);

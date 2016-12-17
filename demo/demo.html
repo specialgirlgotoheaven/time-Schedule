@@ -21,7 +21,7 @@
 		<p>Zoom 1...48 hours:</p>
         <div id="zoom-slider456" style="width:300px;margin-bottom:10px;"></div>
 		<div id="slider456" class="time-slider" style="width: 65%"></div>
-		<div id="block" style="width: 50px ;height:50px ;background: blue"></div>
+		<!--<div id="block" style="width: 50px ;height:50px ;background: blue"></div>-->
 	</div>
 	<p id="messages"></p>
 	<script type="text/javascript" src="../js/jquery-3.1.1.min.js"></script>
@@ -52,12 +52,15 @@
 					on_add_timecell_callback:function(e){
 						console.log("on_add_timecell_callback");
 					},
-					on_move_ruler_callback: function () {
+					on_move_ruler_callback: function (e) {
 						console.log("on_move_ruler_callback");
-					}
+					},
+					ruler_enable_move:false,
+					show_time_cursor:false
 				});
 
 				$('#slider456').TimeSlider({
+					ruler_enable_move:false,
 					update_timestamp_interval: 10,
 					update_interval: 10,
 					show_ms: true,
@@ -67,11 +70,35 @@
 					init_cells: [
 						{'_id': 'c1', 'start': (current_time - (3600 * 6.2 * 1000) + 5678), 'stop': current_time - 3600 * 4.8 * 1000},
 						{'_id': 'c2', 'start': (current_time - (3600 * 3.1 * 1000) + 864), 'stop': current_time}
-					]
+					],
+					on_add_timecell_callback:function(){}
 				});
 
-				$('#slider123').TimeSlider('edit',$("#c1"));
+/*				var flagMouseDown = false;
+				var flagMouseUp = false;
+				var mark=0;
+				$('#slider123').mousedown(function(e){
+					var x = e.pageX || e.clientX + scrollX;
+					flagMouseDown = true;
+					flagMouseUp = false;
+					console.log(x);
+				});
 
+				$('#slider123').mouseup(function(e){
+					mark +=10000000;
+					if(flagMouseDown){
+						//$('#slider123').data().timeslider.add_timecell({_id:"vccc2"+mark,start:new Date().getTime()+mark,stop:new Date().getTime()+5000000+mark});
+					}
+					flagMouseUp = false;
+
+				});
+
+				$('#slider456').mousemove(function(e){
+
+				});*/
+
+				$('#slider123').TimeSlider('remove_all');
+				$('#slider456').TimeSlider('remove_all');
 /*				$('#zoom-slider123').slider({
 					min: 1,
 					max: 48,
