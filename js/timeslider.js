@@ -67,7 +67,24 @@ if (typeof jQuery === 'undefined') {
         on_change_timecell_callback: null,
         on_dblclick_ruler_callback: null,
         on_move_ruler_callback: null,
-        on_change_ruler_callback: null
+        on_change_ruler_callback: null,
+        draw_new_timecell_flag:null,
+        draw_new_timecell_mousedown:null,
+        draw_new_timecell_id:null,
+        draw_new_timecell_start_x:null,
+        draw_new_timecell_obj:null,
+        draw_new_timecell_select_obj:null,
+        prev_draw_new_cursor_x:null,
+        ////////////////////////////////
+        my_wId:'w',
+        my_index:0,
+        my_startX:0,
+        my_startY:0,
+        my_flag:false,
+        my_retcLeft:"0px",
+        my_retcTop:"0px",
+        my_retcHeight:"0px",
+        my_retcWidth:"0px"
     };
 
     TimeSlider.prototype.init = function(element, options) {
@@ -244,6 +261,27 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.add_events = function() {
         var _this = this;
+
+        document.oncontextmenu = function(e){
+            e.preventDefault();
+        };
+        _this.$element.mousedown(
+            function(e){
+                _this.draw_new_timecell_mousedown = true;
+
+                console.log("260");
+                console.log(e);
+                _this.draw_new_timecell(e);
+                if(e.button ==2){
+                    console.log("你点了右键");
+                }/*else if(e.button ==0){
+                 alert("你点了左键");
+                 }else if(e.button ==1){
+                 alert("你点了滚轮");
+                 }*/
+            }
+        );
+
         if(_this.options.show_time_cursor){
             window.setInterval(this.set_current_timestamp(), this.options['update_timestamp_interval']);
             window.setInterval(this.set_running_elements(), this.options['update_interval']);
@@ -382,8 +420,34 @@ if (typeof jQuery === 'undefined') {
             this.options.on_add_timecell_callback(timecell_id, start, stop);
         }
     };
+    TimeSlider.prototype.draw_new_timecell = function (e) {
+
+/*        var _this = this;
+        _this.mark +=10000000;
+        _this.add_timecell({_id:"vccc2"+_this.mark,start:new Date().getTime()+_this.mark,stop:new Date().getTime()+5000000+_this.mark});*/
+        var _this = this;
+        _this.prev_draw_new_cursor_x = _this.get_cursor_x_position(e);
+        _this.draw_new_timecell_flag = true;
+        var temp=_this.draw_new_timecell_start_x = _this.get_cursor_x_position(e);
+        _this.draw_new_timecell_id = _this.draw_new_timecell_start_x;
+
+        _this.mark +=10000000;
+
+        var tempTimecell = {
+            '_id':"draw_new_timecell_"+temp,
+            'start':temp+new Date().getTime(),
+            'stop':temp+new Date().getTime()
+        }
+        _this.add_timecell(tempTimecell);
+        //_this.add_timecell(tempTimecell);
+        //console.log(_this.add_cell(tempTimecell));
+        var pos_x = _this.get_cursor_x_position(e);
+        console.log("////////////////////////draw_new_timecell_start_x:"+_this.draw_new_timecell_start_x);
+    }
+
 
     TimeSlider.prototype.edit_timecell = function(options) {
+        console.log("edit_timecell")
         if (! options['_id'] || (! options['start'] && ! options['stop'])) {
             return;
         }
@@ -508,6 +572,7 @@ if (typeof jQuery === 'undefined') {
         };
 
         var time_cell_mousedown_event = function(e) {
+            e.stopPropagation();
             if (e.which == 1) { // left mouse button event
                 _this.clicked_on = 'timecell';
                 var id = $(this).attr('p_id');
@@ -551,6 +616,21 @@ if (typeof jQuery === 'undefined') {
                         break;
                 }
                 _this.prev_cursor_x = _this.get_cursor_x_position(e);
+            }
+            else if(e.button == 2){
+                console.log("右键577");
+                var id = $(this).attr('p_id');
+                _this.time_cell_selected = {
+                    element: _this.$ruler.find('#' + id),
+                    l_prompt: _this.$prompts.find('#l-prompt-' + id + '.prompt'),
+                    t_element: $(this),
+                    hover: true
+                };
+                console.log(_this.time_cell_selected.element[0]);
+                console.log("Id:"+_this.time_cell_selected.element[0].id);
+                var tempId = _this.time_cell_selected.element[0].id;
+                console.log("start_timestamp:"+$("#"+tempId).attr("start_timestamp"));
+                console.log("stop_timestamp:"+$("#"+tempId).attr("stop_timestamp"));
             }
         };
 
@@ -631,6 +711,7 @@ if (typeof jQuery === 'undefined') {
         var width;
         var left;
         if (! this.$ruler.find('#' + timecell['_id']).length) {
+            //debugger
             t_class = '';
             start = 'start_timestamp="' + (timecell['start']).toString() + '"';
             stop = '';
@@ -691,8 +772,12 @@ if (typeof jQuery === 'undefined') {
                     _this.options.on_dblclick_timecell_callback(p_id, start, stop);
                 });
             }
+            console.log("return timecell");
+            _this.draw_new_timecell_obj = timecell;
+            console.log(_this.draw_new_timecell_obj);
             return timecell;
         }
+        //debugger
         return false;
     };
 
@@ -846,8 +931,11 @@ if (typeof jQuery === 'undefined') {
     };
 
     TimeSlider.prototype._edit_time_cell = function(options) {
+        console.log("_edit_time_cell");
+        console.log(options);
         var has_start = options.start !== undefined && options.start !== null;
         var has_stop = options.stop !== undefined && options.stop !== null && options.element.attr('stop_timestamp');
+        console.log("has_start:"+has_start +" |has_stop:"+has_stop);
         if (has_start) {
             var stop = null;
             if (options.stop !== undefined && options.stop) {
@@ -893,6 +981,7 @@ if (typeof jQuery === 'undefined') {
             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
             timecell['start'] = new_start;
             timecell['stop'] = new_stop;
+            console.log("set_time_cell_position if move all time cell");
             this._edit_time_cell(timecell);
             if (typeof this.options.on_move_timecell_callback == 'function') {
                 this.options.on_move_timecell_callback(id, new_start, new_stop);
@@ -903,6 +992,7 @@ if (typeof jQuery === 'undefined') {
             var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x / this.px_per_ms);
             timecell['l_prompt'] = this.time_cell_selected.l_prompt;
             timecell['start'] = new_start;
+            console.log("set_time_cell_position else if left border");
             this._edit_time_cell(timecell);
             if (typeof this.options.on_resize_timecell_callback == 'function') {
                 this.options.on_resize_timecell_callback(
@@ -918,6 +1008,8 @@ if (typeof jQuery === 'undefined') {
             var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x / this.px_per_ms);
             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
             timecell['stop'] = new_stop;
+            console.log("set_time_cell_position else if right border");
+            console.log(timecell);
             this._edit_time_cell(timecell);
             if (typeof this.options.on_resize_timecell_callback == 'function') {
                 this.options.on_resize_timecell_callback(
@@ -950,10 +1042,63 @@ if (typeof jQuery === 'undefined') {
         var _this = this;
         return function(e) {
             var pos_x = _this.get_cursor_x_position(e);
+            ////////2016-12-18/////////////
+            /*
+            *             if (timecell) {
+             timecell_id = timecell['_id'];
+             start = timecell['start'];
+             stop = timecell['stop'];
+             }
+            *
+            * */
+/*
+*
+ var id = $(this).attr('p_id');
+  _this.time_cell_selected = {
+ element: _this.$ruler.find('#' + id),
+ t_element: $(this),
+ r_prompt: _this.$prompts.find('#r-prompt-' + id + '.prompt'),
+ hover: true
+ };
+ _this.is_mouse_down_left = true;
+*
+*
+* */
+
+
+            if(_this.draw_new_timecell_mousedown && _this.draw_new_timecell_flag && _this.draw_new_timecell_obj!=null){
+                //debugger
+                //var diff_x= pos_x - _this.prev_cursor_x;
+                var diff_x= pos_x - _this.prev_draw_new_cursor_x;
+                console.log($("#t"+_this.draw_new_timecell_obj._id));
+                console.log($("#"+_this.draw_new_timecell_obj._id));
+                var id = $("#t"+_this.draw_new_timecell_obj._id).attr('p_id');
+                console.log("mmmmmmmmmm");
+                _this.draw_new_timecell_select_obj ={
+                    element: _this.$ruler.find('#' + id),
+                    t_element: $("#"+_this.draw_new_timecell_obj._id),
+                    r_prompt: _this.$prompts.find('#r-prompt-' + id + '.prompt'),
+                    hover: true
+                }
+                var timecell = {
+                    element: _this.draw_new_timecell_select_obj.element,
+                    t_element: _this.draw_new_timecell_select_obj.t_element
+                };
+                var new_stop = parseInt(_this.draw_new_timecell_select_obj.element.attr('stop_timestamp')) + Math.round((diff_x+1) / _this.px_per_ms);
+                //debugger
+                timecell['r_prompt'] = _this.draw_new_timecell_select_obj.r_prompt;
+                timecell['stop'] = new_stop;
+                _this._edit_time_cell(timecell);
+
+
+            }
+
+            ////////2016-12-18////////////
             if (_this.is_mouse_down_left) {
                 switch (_this.clicked_on) {
                     case 'timecell':
                         if (_this.time_cell_selected) {
+                            console.log("pos_x:"+pos_x +"_this.prev_cursor_x"+_this.prev_cursor_x);
                             _this.set_time_cell_position(pos_x - _this.prev_cursor_x);
                         }
                         break;
@@ -969,7 +1114,15 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.mouse_up_event = function() {
         var _this = this;
+
         return function(e) {
+            e.preventDefault();
+            if(_this.draw_new_timecell_mousedown && _this.draw_new_timecell_flag && _this.draw_new_timecell_obj!=null){
+                $("#t"+_this.draw_new_timecell_obj._id).addClass("current");
+                $("#t"+_this.draw_new_timecell_obj._id).width($("#"+_this.draw_new_timecell_obj._id).width());
+            }
+            _this.draw_new_timecell_mousedown = false;
+
             if (e.which == 1) { // left mouse button event
                 _this.is_mouse_down_left = false;
                 switch (_this.clicked_on) {
@@ -1001,8 +1154,10 @@ if (typeof jQuery === 'undefined') {
                         break;
                     default://画方块的情况
                         {//add_cell    //$('#slider123').data().timeslider
-                            //_this.mark +=10000000;
-                            //_this.add_timecell({_id:"vccc2"+_this.mark,start:new Date().getTime()+_this.mark,stop:new Date().getTime()+5000000+_this.mark});
+                            console.log("1071:我在这里画方块");
+
+                            // _this.mark +=10000000;
+                            // _this.add_timecell({_id:"vccc2"+_this.mark,start:new Date().getTime()+_this.mark,stop:new Date().getTime()+5000000+_this.mark});
 
                             
 
@@ -1011,16 +1166,25 @@ if (typeof jQuery === 'undefined') {
                 }
                 _this.clicked_on = null;
             }
+            else if(e.which == 2){
+                console.log("imeSlider.prototype.mouse_up_event:右键")
+                console.log(_this.time_cell_selected);
+            }
         }
     };
 
     TimeSlider.prototype.ruler_mouse_down_event = function() {
         var _this = this;
         return function(e) {
+            console.log(e);
+            e.preventDefault();
             if (e.which == 1) { // left mouse button event
                 _this.clicked_on = 'ruler';
                 _this.is_mouse_down_left = true;
                 _this.prev_cursor_x = _this.get_cursor_x_position(e);
+            }else if(e.which == 2){
+                console.log("ruler_mouse_down_event:右键577");
+                console.log(_this.time_cell_selected);
             }
         }
     };
