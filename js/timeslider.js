@@ -103,7 +103,7 @@ if (typeof jQuery === 'undefined') {
         this.$element.find('.graduation-title').remove();
         this.$element.append(
             '<div class="ruler" style="height:' + (this.$element.height() + this.gt_height) + 'px;"></div>' +
-            '<div class="prompts" style="top:-95px;"></div>'//"top:-' + (this.$element.height() * 2 + this.gt_height) + 'px;"
+            '<div class="prompts" style="top:-' + (this.$element.height() * 2 + this.gt_height) + 'px;"></div>'
         );
         this.$element.height(this.$element.height() + this.gt_height);
         this.$ruler = this.$element.find('.ruler');
@@ -434,7 +434,7 @@ if (typeof jQuery === 'undefined') {
             var width = (stop - start) * this.px_per_ms;
             var left = (start - this.options.start_timestamp) * this.px_per_ms;
             this.$prompts.append(
-                '<div id="r-prompt-' + timecell_id + '" class="prompt" style="top:80px;left: ' + (left + width ).toString() + 'px;">' +
+                '<div id="r-prompt-' + timecell_id + '" class="prompt" style="top:101px;left: ' + (left + width - 44).toString() + 'px;">' +
                     '<div class="triangle-up"></div>' +
                     '<div class="body">' + this.timestamp_to_date(stop) + '</div>' +
                 '</div>');
@@ -812,7 +812,7 @@ if (typeof jQuery === 'undefined') {
                     '<div class="body">' + this.timestamp_to_date(timecell['start']) + '</div>' +
                 '</div>' +
                 (timecell['stop'] ?
-                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:80px;left: ' + (left + width - 44).toString() + 'px;">' +
+                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:101px;left: ' + (left + width - 44).toString() + 'px;">' +
                         '<div class="triangle-up"></div>' +
                         '<div class="body">' + this.timestamp_to_date(timecell['stop']) + '</div>' +
                     '</div>'
