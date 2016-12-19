@@ -5,8 +5,9 @@
 	<title>TimeSlider Demo</title>
 	<meta name="description" content="TimeSlider Plugin for jQuery">
 	<meta name="keywords" content="timeslider, time-slider, time slider, rangeslider, range-slider, range slider, jquery, javascript">
-
+	<link href="../libs/jquery-ui.css" rel="stylesheet" type="text/css"/>
 	<link href="../css/timeslider.css" rel="stylesheet" type="text/css"/>
+
 </head>
 <body>
 	<h3 id="version"></h3>
@@ -14,7 +15,7 @@
 		<p>With standard options</p>
 		<p>Zoom 1...48 hours:</p>
         <div id="zoom-slider123" style="width:300px;margin-bottom:10px;"></div>
-		<div id="slider123" class="time-slider"></div>
+		<div id="slider123" class="time-slider"style="width: 40%"></div>
 	</div>
 	<div style="margin: 50px 30px;">
 		<p>Using milliseconds</p>
@@ -24,17 +25,23 @@
 		<!--<div id="block" style="width: 50px ;height:50px ;background: blue"></div>-->
 	</div>
 	<p id="messages"></p>
-	<script type="text/javascript" src="../js/jquery-3.1.1.min.js"></script>
+	<!--<script type="text/javascript" src="../js/jquery-3.1.1.min.js"></script>-->
+	<script type="text/javascript" src="../libs/jquery.js"></script>-
 	<script src="../js/jquery-ui.js"></script>
+<!--	<script src="../libs/jquery.ui.dialog.min.js"></script>-->
 	<script src="../js/timeslider.js"></script>
 	<script type="text/javascript">
-        var current_time = (new Date()).getTime() + ((new Date()).getTimezoneOffset() * 60 * 1000 * -1);
+        var current_time = (new Date("2016-12-19 12:00:00")).getTime();//+ ((new Date("2016-12-19 12:00:00")).getTimezoneOffset() * 60 * 1000 * -1)
+
 		$(document).ready(function () {
 			(function () {
+
+				//alert(current_time);
+
 				$('#version').text('Version: '+ $.fn.TimeSlider.VERSION);
 
 				$('#slider123').TimeSlider({
-					start_timestamp: current_time - 3600 * 12 * 1000,
+					start_timestamp: current_time - 3600 * 12 * 1000,//当前时间-12小时
 					init_cells: [
 						{
                             '_id': 'c1',
@@ -43,11 +50,16 @@
                             'style': {
                                 'background-color': '#76C4FF'
                             }
-                        },
+                        }/*,
 						{
                             '_id': 'c2',
                             'start': (current_time - (3600 * 2.1 * 1000))
-                        }
+                        }*/
+/*						,
+						{
+							'_id': 'c3',
+							'start': (current_time - (3600 * 3.6 * 1000))
+						}*/
 					],
 					on_add_timecell_callback:function(e){
 						console.log("on_add_timecell_callback");
@@ -59,7 +71,7 @@
 					show_time_cursor:false
 				});
 
-/*				$('#slider456').TimeSlider({
+				$('#slider456').TimeSlider({
 					ruler_enable_move:false,
 					update_timestamp_interval: 10,
 					update_interval: 10,
@@ -71,8 +83,11 @@
 						{'_id': 'c1', 'start': (current_time - (3600 * 6.2 * 1000) + 5678), 'stop': current_time - 3600 * 4.8 * 1000},
 						{'_id': 'c2', 'start': (current_time - (3600 * 3.1 * 1000) + 864), 'stop': current_time}
 					],
-					on_add_timecell_callback:function(){}
-				});*/
+					on_add_timecell_callback:function(){},
+					on_dblclick_ruler_callback:function(){},
+					on_dblclick_timecell_callback:function(e){
+					}
+				});
 
 /*				var flagMouseDown = false;
 				var flagMouseUp = false;
@@ -118,8 +133,13 @@
 						$('#slider456').TimeSlider({hours_per_ruler: ui.value});
 					}
 				});*/
+				console.log($('#slider123').data().timeslider.get_all_timecells());
 		    })();
 		});
 	</script>
+<div id="dialog" title="Basic dialog">
+	<div><label>开始时间:</label><input type="text"></div>
+	<div><label>结束时间:</label><input type="text"></div>
+</div>
 </body>
 </html>

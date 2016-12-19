@@ -51,12 +51,11 @@ if (typeof jQuery === 'undefined') {
     TimeSlider.VERSION = '0.9.8';
 
     TimeSlider.DEFAULTS = {
-        //start_timestamp: (new Date(this.static_date_string)).getTime() + ((new Date(this.static_date_string)).getTimezoneOffset() * 60 * 1000 * -1),   // left border
-        start_timestamp: (new Date(this.static_date_string)).getTime(),   // left border
-        current_timestamp: (new Date(this.static_date_string)).getTime(), // current timestamp
+        start_timestamp: (new Date(this.static_date_string)).getTime() + ((new Date(this.static_date_string)).getTimezoneOffset() * 60 * 1000 * -1),   // left border
+        current_timestamp: (new Date(this.static_date_string)).getTime() + ((new Date(this.static_date_string)).getTimezoneOffset() * 60 * 1000 * -1), // current timestamp
         hours_per_ruler: 24,                    //一把尺子上有几个小时 length of graduation ruler in hours (min 1, max 48)
-        graduation_step: 10,                    //每一小格多少分钟 minimum pixels between graduations
-        distance_between_gtitle: 50,            //刻度间间隔 minimum pixels between titles of graduations
+        graduation_step: 20,                    //每一小格多少分钟 minimum pixels between graduations
+        distance_between_gtitle: 80,            //刻度间间隔 minimum pixels between titles of graduations
         update_timestamp_interval: 1000,        // 时间同步时间间隔 interval for updating current time
         update_interval: 1000,                  // interval for updating elements
         show_ms: false,                         //是否显示微秒 whether to show the milliseconds?
@@ -103,7 +102,7 @@ if (typeof jQuery === 'undefined') {
         this.$element.find('.graduation-title').remove();
         this.$element.append(
             '<div class="ruler" style="height:' + (this.$element.height() + this.gt_height) + 'px;"></div>' +
-            '<div class="prompts" style="top:-95px;"></div>'//"top:-' + (this.$element.height() * 2 + this.gt_height) + 'px;"
+            '<div class="prompts" style="top:-' + (this.$element.height() * 2 + this.gt_height) + 'px;"></div>'
         );
         this.$element.height(this.$element.height() + this.gt_height);
         this.$ruler = this.$element.find('.ruler');
@@ -138,26 +137,6 @@ if (typeof jQuery === 'undefined') {
             }
         }
         this.add_events();
-
-        $("#dialog").dialog({
-            autoOpen: false,
-            title:'时间段设置',
-            buttons:[
-                {
-                text: "提交",
-                id: "dialog_save",
-                click: function (e) {
-                    $("#dialog").dialog("close");
-                }
-            },
-                {
-                text:"取消",
-                id:'dialog_cancel',
-                click:function(e){
-                    $("#dialog").dialog( "close" );
-                }
-            }]
-        })
     };
 
     TimeSlider.prototype.get_defaults = function() {
@@ -247,23 +226,23 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.timestamp_to_date = function(timestamp) {
         var datetime = new Date(timestamp);
-        return ('0' + datetime.getDate().toString()).substr(-2) + '.' +
-            ('0' + (datetime.getMonth() + 1).toString()).substr(-2) + '.' +
-            datetime.getFullYear() + ' ' +
-            ('0' + datetime.getHours().toString()).substr(-2) + ':' +
-            ('0' + datetime.getMinutes().toString()).substr(-2) + ':' +
-            ('0' + datetime.getSeconds().toString()).substr(-2) +
-            (this.options.show_ms ? ('.' + ('00' + datetime.getMilliseconds().toString()).substr(-3)) : '');
+        return ('0' + datetime.getUTCDate().toString()).substr(-2) + '.' +
+            ('0' + (datetime.getUTCMonth() + 1).toString()).substr(-2) + '.' +
+            datetime.getUTCFullYear() + ' ' +
+            ('0' + datetime.getUTCHours().toString()).substr(-2) + ':' +
+            ('0' + datetime.getUTCMinutes().toString()).substr(-2) + ':' +
+            ('0' + datetime.getUTCSeconds().toString()).substr(-2) +
+            (this.options.show_ms ? ('.' + ('00' + datetime.getUTCMilliseconds().toString()).substr(-3)) : '');
     };
 
     TimeSlider.prototype.graduation_title = function(datetime) {
-        if (!this.options.static_time && datetime.getHours() == 0 && datetime.getMinutes() == 0 && datetime.getMilliseconds() == 0) {
-            return ('0' + datetime.getDate().toString()).substr(-2) + '.' +
-                ('0' + (datetime.getMonth() + 1).toString()).substr(-2) + '.' +
-                datetime.getFullYear();
+        if (!this.options.static_time && datetime.getUTCHours() == 0 && datetime.getUTCMinutes() == 0 && datetime.getUTCMilliseconds() == 0) {
+            return ('0' + datetime.getUTCDate().toString()).substr(-2) + '.' +
+                ('0' + (datetime.getUTCMonth() + 1).toString()).substr(-2) + '.' +
+                datetime.getUTCFullYear();
         }
         //return ('0'+datetime.getUTCHours().toString()).substr(-2) + ':' + ('0' + datetime.getUTCMinutes().toString()).substr(-2)+ ":" + ('0' + datetime.getUTCSeconds().toString()).substr(-2);
-        return ('0'+datetime.getHours().toString()).substr(-2) + ':' + ('0' + datetime.getMinutes().toString()).substr(-2)+ ":" + ('0' + datetime.getSeconds().toString()).substr(-2);
+        return ('0'+datetime.getUTCHours().toString()).substr(-2) + ':' + ('0' + datetime.getUTCMinutes().toString()).substr(-2)+ ":" + ('0' + datetime.getUTCSeconds().toString()).substr(-2);
     };
 
     TimeSlider.prototype.ms_to_next_step = function(timestamp, step) {
@@ -295,13 +274,6 @@ if (typeof jQuery === 'undefined') {
         document.oncontextmenu = function(e){
             e.preventDefault();
         };
-        this.$ruler.dblclick(function(e){
-            e.stopPropagation();
-            e.preventDefault();
-            //alert("12-12");
-            $("#dialog").dialog( "open" );
-
-        });
         _this.$element.mousedown(
 
             function(e){
@@ -332,9 +304,7 @@ if (typeof jQuery === 'undefined') {
             this.$ruler.find('.bg-event').mousedown(this.ruler_mouse_down_event());
         }
         if (typeof this.options.on_dblclick_ruler_callback == 'function') {
-            this.$ruler.find('.bg-event').dblclick(function (e) {
-                e.stop.stopPropagation();
-                alert("2016-12-19");
+            this.$ruler.find('.bg-event').dblclick(function () {
                 _this.options.on_dblclick_ruler_callback(
                     _this.options.start_timestamp,
                     _this.options.current_timestamp
@@ -391,17 +361,15 @@ if (typeof jQuery === 'undefined') {
             caret_class = '';
             date = new Date(minute_caret);
             left = i * px_per_step + this.px_per_ms * ms_offset;
-            if (date.getHours() == 0 && date.getMinutes() == 0) {
+            if (date.getUTCHours() == 0 && date.getUTCMinutes() == 0) {
                 caret_class = 'big';
             }
             else if (minute_caret / (60 * 1000) % medium_step == 0) {
                 caret_class = 'middle';
             }
-            //debugger
-            //console.log(this.graduation_title(date));
-/*            if(this.options.static_time == 24 && i == num_steps){
+            if(this.options.static_time == 24 && i == num_steps){
                 date = new Date(this.static_date_string.slice(0,10)+" "+"06:59:59");
-            }*/
+            }
             //console.log("date");
             //console.log(date);
             this.$ruler.append('<div id="hour' + i + '" class="graduation ' + caret_class + '" style="left: ' + left.toString() + 'px"></div>');
@@ -434,7 +402,7 @@ if (typeof jQuery === 'undefined') {
             var width = (stop - start) * this.px_per_ms;
             var left = (start - this.options.start_timestamp) * this.px_per_ms;
             this.$prompts.append(
-                '<div id="r-prompt-' + timecell_id + '" class="prompt" style="top:80px;left: ' + (left + width ).toString() + 'px;">' +
+                '<div id="r-prompt-' + timecell_id + '" class="prompt" style="top:101px;left: ' + (left + width - 44).toString() + 'px;">' +
                     '<div class="triangle-up"></div>' +
                     '<div class="body">' + this.timestamp_to_date(stop) + '</div>' +
                 '</div>');
@@ -504,7 +472,7 @@ if (typeof jQuery === 'undefined') {
         var tempTimecell = {
             '_id':"draw_new_timecell_"+temp,
             'start':temp / _this.px_per_ms+tempInitDate,
-            'stop':temp / _this.px_per_ms+tempInitDate+ 20000 * _this.options.distance_between_gtitle
+            'stop':temp / _this.px_per_ms+tempInitDate+1000
         }
         _this.add_timecell(tempTimecell);
 
@@ -812,7 +780,7 @@ if (typeof jQuery === 'undefined') {
                     '<div class="body">' + this.timestamp_to_date(timecell['start']) + '</div>' +
                 '</div>' +
                 (timecell['stop'] ?
-                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:80px;left: ' + (left + width - 44).toString() + 'px;">' +
+                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:101px;left: ' + (left + width - 44).toString() + 'px;">' +
                         '<div class="triangle-up"></div>' +
                         '<div class="body">' + this.timestamp_to_date(timecell['stop']) + '</div>' +
                     '</div>'
@@ -834,18 +802,8 @@ if (typeof jQuery === 'undefined') {
                 .mousedown(time_cell_mousedown_event)
                 .mousemove(time_cell_mousemove_event)
                 .mouseout(time_cell_mouseout_event);
-
-            this.$ruler.find('#' + timecell['_id']).dblclick(function (e) {
-
-                e.stopPropagation();
-                //alert("4544545");
-            });
-
             if (typeof this.options.on_dblclick_timecell_callback == 'function') {
-                t_element.dblclick(function(e) {
-                    //alert("821")
-                    e.stopPropagation();
-                    e.preventDefault();
+                t_element.dblclick(function() {
                     var p_id = $(this).attr('p_id');
                     var cell_element = _this.$ruler.find('#' + p_id);
                     var start = parseInt(cell_element.attr('start_timestamp'));
@@ -986,7 +944,7 @@ if (typeof jQuery === 'undefined') {
             caret_class = '';
             date = new Date(minute_caret);
             left = i * px_per_step + _this.px_per_ms * ms_offset;
-            if (date.getHours() == 0 && date.getMinutes() == 0) {
+            if (date.getUTCHours() == 0 && date.getUTCMinutes() == 0) {
                 caret_class = 'big';
             }
             else if (minute_caret / (60 * 1000) % medium_step == 0) {
@@ -1172,7 +1130,7 @@ if (typeof jQuery === 'undefined') {
                 //debugger
                 //var diff_x= pos_x - _this.prev_cursor_x;
                 var diff_x= pos_x - _this.prev_draw_new_cursor_x;
-                //console.log(_this.prev_draw_new_cursor_x+"diff_x:"+diff_x);
+                console.log(_this.prev_draw_new_cursor_x+"diff_x:"+diff_x);
                 var id = $("#t"+_this.draw_new_timecell_obj._id).attr('p_id');
                 //console.log("mmmmmmmmmm");
                 _this.draw_new_timecell_select_obj ={
