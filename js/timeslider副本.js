@@ -53,7 +53,7 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.DEFAULTS = {
         //start_timestamp: (new Date(this.static_date_string)).getTime() + ((new Date(this.static_date_string)).getTimezoneOffset() * 60 * 1000 * -1),   // left border
-        start_timestamp: (new Date("2016-12-19 00:00:00")).getTime(),   // left border //(new Date(this.static_date_string)).getTime()
+        start_timestamp: (new Date(this.static_date_string)).getTime(),   // left border
         current_timestamp: (new Date(this.static_date_string)).getTime(), // current timestamp
         hours_per_ruler: 24,                    //一把尺子上有几个小时 length of graduation ruler in hours (min 1, max 48)
         graduation_step: 10,                    //每一小格多少分钟 minimum pixels between graduations
@@ -250,7 +250,6 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.timestamp_to_date = function(timestamp) {
         var datetime = new Date(timestamp);
-        console.log("datetime:"+datetime);
         /*
          return ('0' + datetime.getDate().toString()).substr(-2) + '.' +
          ('0' + (datetime.getMonth() + 1).toString()).substr(-2) + '.' +
@@ -320,7 +319,7 @@ if (typeof jQuery === 'undefined') {
 
                 //console.log("260");
                 //console.log(e);
-                _this.draw_new_timecell2(e);
+                _this.draw_new_timecell(e);
                 if(e.button ==2){
                     //console.log("你点了右键");
                 }/*else if(e.button ==0){
@@ -494,24 +493,6 @@ if (typeof jQuery === 'undefined') {
             this.options.on_add_timecell_callback(timecell_id, start, stop);
         }
     };
-    TimeSlider.prototype.draw_new_timecell2 = function (e) {
-        //this.prev_draw_new_cursor_x = this.get_cursor_x_position(e);
-        this.options.draw_new_timecell_flag = true;
-        var start_x = this.options.draw_new_timecell_start_x  = this.get_cursor_x_position(e);
-        var tempInitDate = new Date(this.static_date_string.slice(0,10)+" 00:00:00").getTime();
-        var diff = this.options.draw_new_timecell_start_x - this.getElementLeft(this.$element[0]);
-
-        var tempTimecell = {
-            '_id':"draw_new_timecell_"+start_x+parseInt(Math.random()*10000),
-            //'start':(start_x / this.px_per_ms)+tempInitDate,
-            'start':(diff / this.px_per_ms)+tempInitDate,
-            'stop':(diff / this.px_per_ms)+tempInitDate+ 3600*1000
-        }
-        console.log();
-        this.add_cell(tempTimecell);
-    }
-
-
     TimeSlider.prototype.draw_new_timecell = function (e) {
 
 
@@ -744,7 +725,6 @@ if (typeof jQuery === 'undefined') {
         };
 
         var time_cell_mousemove_event = function(e) {
-            //console.log("time_cell_mousemove_event")
             if (! _this.is_mouse_down_left) {
                 var id = $(this).attr('p_id');
                 $(this).addClass('hover');
@@ -842,10 +822,7 @@ if (typeof jQuery === 'undefined') {
             }else{
                 left = (((timecell['start']) - this.options.start_timestamp) * this.px_per_ms);
             }
-            //left = (((timecell['start']) - new Date(_this.static_date_string.slice(0,10)+" 00:00:00").getTime()) * this.px_per_ms);
             //console.log("left:"+left);
-            //this.options.start_timestamp = this.options.start_timestamp - Math.round(diff_x / this.px_per_ms);
-
             if (timecell['stop']) {
                 stop = 'stop_timestamp="' + (timecell['stop']).toString() + '"';
             }
@@ -986,8 +963,6 @@ if (typeof jQuery === 'undefined') {
         this.$ruler.children('.timecell').each(function () {
             var start_timestamp = parseInt($(this).attr('start_timestamp'));
             var left = (start_timestamp - _this.options.start_timestamp) * _this.px_per_ms;
-            //var left = this.options.draw_new_timecell_start_x - this.getElementLeft(_this.$element[0]);
-
             var width = (($(this).attr('stop_timestamp')
                 ? parseInt($(this).attr('stop_timestamp'))
                 : _this.options.current_timestamp) - start_timestamp) * _this.px_per_ms;
@@ -1010,7 +985,6 @@ if (typeof jQuery === 'undefined') {
     };
 
     TimeSlider.prototype.set_ruler_position = function(diff_x) {
-        console.log("set_ruler_position");
         var _this = this;
         this.options.start_timestamp = this.options.start_timestamp - Math.round(diff_x / this.px_per_ms);
 
@@ -1189,7 +1163,72 @@ if (typeof jQuery === 'undefined') {
         var _this = this;
         return function(e) {
             var pos_x = _this.get_cursor_x_position(e);
+/*            ////////2016-12-18/////////////
+            /!*
+            *             if (timecell) {
+             timecell_id = timecell['_id'];
+             start = timecell['start'];
+             stop = timecell['stop'];
+             }
+            *
+            * *!/
+/!*
+*
+ var id = $(this).attr('p_id');
+  _this.time_cell_selected = {
+ element: _this.$ruler.find('#' + id),
+ t_element: $(this),
+ r_prompt: _this.$prompts.find('#r-prompt-' + id + '.prompt'),
+ hover: true
+ };
+ _this.is_mouse_down_left = true;
+*
+*
+* *!/
+            /!*
+            *var id = this.time_cell_selected.element.attr('id');
+             var timecell = {
+             element: this.time_cell_selected.element,
+             t_element: this.time_cell_selected.t_element
+             };
+             var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x / this.px_per_ms);
+             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
+             timecell['stop'] = new_stop;
+             this._edit_time_cell(timecell);
+            * **!/
 
+            /!**
+             *  this.$ruler.find('#t' + timecell['_id']);
+             *
+             * *!/
+
+            if(_this.draw_new_timecell_mousedown && _this.options.draw_new_timecell_flag && _this.draw_new_timecell_obj!=null){
+                //debugger
+                //var diff_x= pos_x - _this.prev_cursor_x;
+                var diff_x= pos_x - _this.prev_draw_new_cursor_x;
+                //console.log(_this.prev_draw_new_cursor_x+"diff_x:"+diff_x);
+                var id = $("#t"+_this.draw_new_timecell_obj._id).attr('p_id');
+                //console.log("mmmmmmmmmm");
+                _this.draw_new_timecell_select_obj ={
+                    element: _this.$ruler.find('#' + id),
+                    t_element: $("#t"+_this.draw_new_timecell_obj._id),//$("#"+_this.draw_new_timecell_obj._id)
+                    r_prompt: _this.$prompts.find('#r-prompt-' + id + '.prompt'),
+                    hover: true
+                }
+                var timecell = {
+                    element: _this.draw_new_timecell_select_obj.element,
+                    t_element: _this.draw_new_timecell_select_obj.t_element
+                };
+                var new_stop = parseInt(_this.draw_new_timecell_select_obj.element.attr('stop_timestamp')) + Math.round((diff_x+1) / _this.px_per_ms);
+                //debugger
+                timecell['r_prompt'] = _this.draw_new_timecell_select_obj.r_prompt;
+                timecell['stop'] = new_stop;
+                _this._edit_time_cell(timecell);
+
+
+            }
+
+            ////////2016-12-18////////////*/
             if (_this.is_mouse_down_left) {
                 switch (_this.clicked_on) {
                     case 'timecell':
