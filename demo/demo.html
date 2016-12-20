@@ -7,137 +7,54 @@
 	<meta name="keywords" content="timeslider, time-slider, time slider, rangeslider, range-slider, range slider, jquery, javascript">
 	<link href="../libs/jquery-ui.css" rel="stylesheet" type="text/css"/>
 	<link href="../css/timeslider.css" rel="stylesheet" type="text/css"/>
-
+	<link href="../css/customPlan.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-	<h3 id="version"></h3>
-	<div style="margin: 50px 30px;">
-		<p>With standard options</p>
-		<p>Zoom 1...48 hours:</p>
-        <div id="zoom-slider123" style="width:300px;margin-bottom:10px;"></div>
-		<div id="slider123" class="time-slider"style="width: 60%"></div>
+	<div>
+		<span>
+			<input type="radio" name="planType" value="week" checked><label>按周制定计划</label>
+			<input type="radio" name="planType" value="holiday"><label>按假期制定计划</label>
+		</span>
 	</div>
-	<div style="margin: 50px 30px;">
-		<p>Using milliseconds</p>
-		<p>Zoom 1...48 hours:</p>
-        <div id="zoom-slider456" style="width:300px;margin-bottom:10px;"></div>
-		<div id="slider456" class="time-slider" style="width: 65%"></div>
-		<!--<div id="block" style="width: 50px ;height:50px ;background: blue"></div>-->
+	<div id="customPlanWeek" class="customPlan_panel">
+		<button class="clearAll">清空</button>
 	</div>
-	<p id="messages"></p>
-	<!--<script type="text/javascript" src="../js/jquery-3.1.1.min.js"></script>-->
-	<script type="text/javascript" src="../libs/jquery.js"></script>-
+	<div id="customPlanHoliday" class="customPlan_panel" style="display: none">
+		<button class="clearAll">清空</button>
+	</div>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
 	<script src="../js/jquery-ui.js"></script>
-<!--	<script src="../libs/jquery.ui.dialog.min.js"></script>-->
 	<script src="../js/timeslider.js"></script>
+	<script src="../js/customPlan.js"></script>
 	<script type="text/javascript">
-        var current_time = (new Date("2016-12-19 12:00:00")).getTime();//+ ((new Date("2016-12-19 12:00:00")).getTimezoneOffset() * 60 * 1000 * -1)
-
+        //var current_time = (new Date("2016-12-19 12:00:00")).getTime();//+ ((new Date("2016-12-19 12:00:00")).getTimezoneOffset() * 60 * 1000 * -1)
 		$(document).ready(function () {
-			(function () {
 
-				//alert(current_time);
 
-				$('#version').text('Version: '+ $.fn.TimeSlider.VERSION);
+		if($("input[name='planType']").val() == 'week'){
+			$("#customPlanWeek").show();
+			$("#customPlanWeek").customPlan();
+		}else if($("input[name='planType']").val() == 'holiday'){
+			$("#customPlanHoliday").show();
+			$("#customPlanHoliday").customPlan({dateType:"holiday"});
+		}
 
-				$('#slider123').TimeSlider({
-					start_timestamp: current_time - 3600 * 12 * 1000,//当前时间-12小时
-					init_cells: [
-						{
-                            '_id': 'c1',
-                            'start': (current_time - (3600 * 5.4 * 1000) + 1234),
-                            'stop': current_time - 3600 * 3.2 * 1000,
-                            'style': {
-                                'background-color': '#76C4FF'
-                            }
-                        }/*,
-						{
-                            '_id': 'c2',
-                            'start': (current_time - (3600 * 2.1 * 1000))
-                        }*/
-/*						,
-						{
-							'_id': 'c3',
-							'start': (current_time - (3600 * 3.6 * 1000))
-						}*/
-					],
-					on_add_timecell_callback:function(e){
-						console.log("on_add_timecell_callback");
-					},
-					on_move_ruler_callback: function (e) {
-						console.log("on_move_ruler_callback");
-					},
-					ruler_enable_move:false,
-					show_time_cursor:false
-				});
+		$("input[name='planType']").change(function(){
+			if($(this).val() == 'week'){
+				$("#customPlanHoliday").hide();
+				$("#customPlanWeek").show();
+				$("#customPlanWeek").customPlan();
+			}else if($(this).val() == 'holiday'){
+				$("#customPlanWeek").hide();
+				$("#customPlanHoliday").show();
+				$("#customPlanHoliday").customPlan({dateType:"holiday"});
+			}
+		});
 
-				$('#slider456').TimeSlider({
-					ruler_enable_move:false,
-					update_timestamp_interval: 10,
-					update_interval: 10,
-					show_ms: true,
-					hours_per_ruler: 9,
-					graduation_step: 6,
-					start_timestamp: current_time - 3600 * 7 * 1000,
-					init_cells: [
-						{'_id': 'c1', 'start': (current_time - (3600 * 6.2 * 1000) + 5678), 'stop': current_time - 3600 * 4.8 * 1000},
-						{'_id': 'c2', 'start': (current_time - (3600 * 3.1 * 1000) + 864), 'stop': current_time}
-					],
-					on_add_timecell_callback:function(){},
-					on_dblclick_ruler_callback:function(){},
-					on_dblclick_timecell_callback:function(e){
-					}
-				});
-
-/*				var flagMouseDown = false;
-				var flagMouseUp = false;
-				var mark=0;
-				$('#slider123').mousedown(function(e){
-					var x = e.pageX || e.clientX + scrollX;
-					flagMouseDown = true;
-					flagMouseUp = false;
-					console.log(x);
-				});
-
-				$('#slider123').mouseup(function(e){
-					mark +=10000000;
-					if(flagMouseDown){
-						//$('#slider123').data().timeslider.add_timecell({_id:"vccc2"+mark,start:new Date().getTime()+mark,stop:new Date().getTime()+5000000+mark});
-					}
-					flagMouseUp = false;
-
-				});
-
-				$('#slider456').mousemove(function(e){
-
-				});*/
-
-				//$('#slider123').TimeSlider('remove_all');
-				//$('#slider456').TimeSlider('remove_all');
-/*				$('#zoom-slider123').slider({
-					min: 1,
-					max: 48,
-					value: 24,
-					step: 0.2,
-					slide: function(event, ui) {
-						$('#slider123').TimeSlider({hours_per_ruler: ui.value});
-					}
-				});
-
-				$('#zoom-slider456').slider({
-					min: 1,
-					max: 48,
-					value: 9,
-					step: 0.2,
-					slide: function(event, ui) {
-						$('#slider456').TimeSlider({hours_per_ruler: ui.value});
-					}
-				});*/
-				console.log($('#slider123').data().timeslider.get_all_timecells());
-		    })();
+		//console.log($('#slider123').data().timeslider.get_all_timecells());
 		});
 	</script>
-<div id="dialog" title="Basic dialog">
+<div id="dialog" title="Basic dialog" style="display: none">
 	<div><label>开始时间:</label><input type="text"></div>
 	<div><label>结束时间:</label><input type="text"></div>
 </div>
