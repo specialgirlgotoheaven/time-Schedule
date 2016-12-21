@@ -47,7 +47,8 @@ if (typeof jQuery === 'undefined') {
         this.prev_draw_new_cursor_x = null,
         this.delete_once = null,
         this.dialogInputValueObj = {},
-        this.current_dbclick_timecell = {}
+        this.current_dbclick_timecell = {},
+        this.current_dbclick_timecell_id = null,
         this.init(element, options);
         return this;
     };
@@ -144,7 +145,7 @@ if (typeof jQuery === 'undefined') {
         }
         this.add_events();
 
-        this.get_dialog_value();
+        //this.get_dialog_value();
 
     };
     TimeSlider.prototype.get_dialog_value = function (){
@@ -159,13 +160,15 @@ if (typeof jQuery === 'undefined') {
                     click: function (e) {
                         _this.dialogInputValueObj.startTime = $("#dialog_Start")[0].value;
                         _this.dialogInputValueObj.stopTime = $("#dialog_Stop")[0].value;
+                        var id = $("#current_dbclick_timecell_id").val();
                         //current_dbclick_timecell
                         var start = new Date(_this.static_date +" "+_this.dialogInputValueObj.startTime).getTime();
                         var stop = new Date(_this.static_date +" "+_this.dialogInputValueObj.stopTime).getTime();
-                        var id = _this.current_dbclick_timecell._id;
+
 
                         /*
-                        *         //console.log("edit_timecell")
+                         TimeSlider.prototype.edit_timecell = function(options) {
+                         //console.log("edit_timecell")
                          if (! options['_id'] || (! options['start'] && ! options['stop'])) {
                          return;
                          }
@@ -176,6 +179,7 @@ if (typeof jQuery === 'undefined') {
                          options['r_prompt'] = this.$prompts.find('#r-prompt-' + options['_id'] + '.prompt');
                          this._edit_time_cell(options);
                          }
+                         };
                         *
                         *
                         *
@@ -191,13 +195,13 @@ if (typeof jQuery === 'undefined') {
                          *
                          *
                          * */
-                        $('#l-prompt-' + id + '.prompt') ;
+                        //$('#l-prompt-' + id + '.prompt') ;
                         var tempTimeCell = {};
                         tempTimeCell._id = id;
                         tempTimeCell.start = start;
                         tempTimeCell.stop = stop;
-
-                        //_this.edit_timecell();
+                        //alert('kkkk');
+                        _this.edit_timecell(tempTimeCell,_this);
                         //$("#"+_this.current_dbclick_timecell._id).attr("start_timestamp",);
                         $("#dialog").dialog("close");
                     }
@@ -584,16 +588,16 @@ if (typeof jQuery === 'undefined') {
     }
 
 
-    TimeSlider.prototype.edit_timecell = function(options) {
-        //console.log("edit_timecell")
+    TimeSlider.prototype.edit_timecell = function(options,_this) {
+        console.log("edit_timecell")
         if (! options['_id'] || (! options['start'] && ! options['stop'])) {
             return;
         }
-        options['element'] = this.$ruler.find('#' + options['_id']);
+        options['element'] = _this.$ruler.find('#' + options['_id']);
         if (options['element'].length) {
-            options['l_prompt'] = this.$prompts.find('#l-prompt-' + options['_id'] + '.prompt');
-            options['t_element'] = this.$ruler.find('#t' + options['_id']);
-            options['r_prompt'] = this.$prompts.find('#r-prompt-' + options['_id'] + '.prompt');
+            options['l_prompt'] = _this.$prompts.find('#l-prompt-' + options['_id'] + '.prompt');
+            options['t_element'] = _this.$ruler.find('#t' + options['_id']);
+            options['r_prompt'] = _this.$prompts.find('#r-prompt-' + options['_id'] + '.prompt');
             this._edit_time_cell(options);
         }
     };
@@ -925,10 +929,16 @@ if (typeof jQuery === 'undefined') {
 
 
             t_element.dblclick(function(e){
+
                 //$("#dialog").dialog( "open" );
-                var id = $(this).attr("p_id");
-                _this.current_dbclick_timecell = timecell;
+                var id =t_element.attr('p_id');
+                $("#current_dbclick_timecell_id").val(id);
+                //_this.current_dbclick_timecell = timecell;
+                //_this.current_dbclick_timecell._id = id;
+                //_this.current_dbclick_timecell_id = id;
+
                 //alert("start:" + _this.timestamp_to_date(timecell['start'])+"stop:" + _this.timestamp_to_date(timecell['stop']));
+                _this.get_dialog_value();
                 $("#dialog").dialog( "open" );
 
             });
