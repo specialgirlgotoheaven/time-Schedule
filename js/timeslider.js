@@ -22,6 +22,7 @@ if (typeof jQuery === 'undefined') {
 (function ($) {
     var TimeSlider = function(element, options) {
         this.static_date_string="2016-12-19 12:00:00",
+        this.static_date = "2016-12-19",
         this.$element = null;
         this.$ruler = null;
         this.$prompts = null;
@@ -45,6 +46,8 @@ if (typeof jQuery === 'undefined') {
         this.draw_new_timecell_select_obj = null,
         this.prev_draw_new_cursor_x = null,
         this.delete_once = null,
+        this.dialogInputValueObj = {},
+        this.current_dbclick_timecell = {}
         this.init(element, options);
         return this;
     };
@@ -141,27 +144,73 @@ if (typeof jQuery === 'undefined') {
         }
         this.add_events();
 
+        this.get_dialog_value();
+
+    };
+    TimeSlider.prototype.get_dialog_value = function (){
+        var _this =this;
         $("#dialog").dialog({
             autoOpen: false,
             title:'时间段设置',
             buttons:[
                 {
-                text: "提交",
-                id: "dialog_save",
-                click: function (e) {
-                    $("#dialog").dialog("close");
-                }
-            },
-                {
-                text:"取消",
-                id:'dialog_cancel',
-                click:function(e){
-                    $("#dialog").dialog( "close" );
-                }
-            }]
-        });
+                    text: "提交",
+                    id: "dialog_save",
+                    click: function (e) {
+                        _this.dialogInputValueObj.startTime = $("#dialog_Start")[0].value;
+                        _this.dialogInputValueObj.stopTime = $("#dialog_Stop")[0].value;
+                        //current_dbclick_timecell
+                        var start = new Date(_this.static_date +" "+_this.dialogInputValueObj.startTime).getTime();
+                        var stop = new Date(_this.static_date +" "+_this.dialogInputValueObj.stopTime).getTime();
+                        var id = _this.current_dbclick_timecell._id;
 
-    };
+                        /*
+                        *         //console.log("edit_timecell")
+                         if (! options['_id'] || (! options['start'] && ! options['stop'])) {
+                         return;
+                         }
+                         options['element'] = this.$ruler.find('#' + options['_id']);
+                         if (options['element'].length) {
+                         options['l_prompt'] = this.$prompts.find('#l-prompt-' + options['_id'] + '.prompt');
+                         options['t_element'] = this.$ruler.find('#t' + options['_id']);
+                         options['r_prompt'] = this.$prompts.find('#r-prompt-' + options['_id'] + '.prompt');
+                         this._edit_time_cell(options);
+                         }
+                        *
+                        *
+                        *
+                        * */
+                        /**
+                         *
+                         *  _this.time_cell_selected = {
+                            element: _this.$ruler.find('#' + id),
+                            l_prompt: _this.$prompts.find('#l-prompt-' + id + '.prompt'),
+                            t_element: $(this),
+                            hover: true
+                        };
+                         *
+                         *
+                         * */
+                        $('#l-prompt-' + id + '.prompt') ;
+                        var tempTimeCell = {};
+                        tempTimeCell._id = id;
+                        tempTimeCell.start = start;
+                        tempTimeCell.stop = stop;
+
+                        //_this.edit_timecell();
+                        //$("#"+_this.current_dbclick_timecell._id).attr("start_timestamp",);
+                        $("#dialog").dialog("close");
+                    }
+                },
+                {
+                    text:"取消",
+                    id:'dialog_cancel',
+                    click:function(e){
+                        $("#dialog").dialog( "close" );
+                    }
+                }]
+        });
+    }
 
     TimeSlider.prototype.get_defaults = function() {
         return TimeSlider.DEFAULTS;
@@ -306,13 +355,13 @@ if (typeof jQuery === 'undefined') {
         document.oncontextmenu = function(e){
             e.preventDefault();
         };
-        this.$ruler.dblclick(function(e){
+/*        this.$ruler.dblclick(function(e){
             e.stopPropagation();
             e.preventDefault();
-            //alert("12-12");
+
             $("#dialog").dialog( "open" );
 
-        });
+        });*/
         _this.$element.mousedown(
 
             function(e){
@@ -345,7 +394,7 @@ if (typeof jQuery === 'undefined') {
         if (typeof this.options.on_dblclick_ruler_callback == 'function') {
             this.$ruler.find('.bg-event').dblclick(function (e) {
                 e.stop.stopPropagation();
-                alert("2016-12-19");
+
                 _this.options.on_dblclick_ruler_callback(
                     _this.options.start_timestamp,
                     _this.options.current_timestamp
@@ -507,21 +556,12 @@ if (typeof jQuery === 'undefined') {
             'start':(diff / this.px_per_ms)+tempInitDate,
             'stop':(diff / this.px_per_ms)+tempInitDate+ 3600*1000
         }
-        console.log();
+        //console.log();
         this.add_cell(tempTimecell);
     }
 
 
     TimeSlider.prototype.draw_new_timecell = function (e) {
-
-
-
-
-
-
-/*        var _this = this;
-        _this.mark +=10000000;
-        _this.add_timecell({_id:"vccc2"+_this.mark,start:new Date().getTime()+_this.mark,stop:new Date().getTime()+5000000+_this.mark});*/
         var _this = this;
         _this.options.draw_new_timecell_flag = true;
         _this.prev_draw_new_cursor_x = _this.get_cursor_x_position(e);
@@ -530,12 +570,6 @@ if (typeof jQuery === 'undefined') {
         _this.options.draw_new_timecell_id = _this.options.draw_new_timecell_start_x;
 
         _this.mark +=10000000;
-       // var tempInitDate = new Date(_this.options.static_date_string)
-/*        var tempTimecell = {
-            '_id':"draw_new_timecell_"+temp,
-            'start':temp+new Date().getTime(),
-            'stop':temp+new Date().getTime()
-        }*/
         var tempInitDate = new Date(_this.static_date_string.slice(0,10)+" 00:00:00").getTime();
 
         var tempTimecell = {
@@ -546,10 +580,7 @@ if (typeof jQuery === 'undefined') {
         _this.is_mouse_down_left = true;
         _this.clicked_on = true;
         _this.add_timecell(tempTimecell);
-        /*        if (_this.is_mouse_down_left) {
-         switch (_this.clicked_on) {
-         case 'timecell':
-         if (_this.time_cell_selected) {*/
+
     }
 
 
@@ -855,21 +886,21 @@ if (typeof jQuery === 'undefined') {
             style = 'left:' + left.toString() + 'px;';
             style += 'width:' + width.toString() + 'px;';
             var timecell_style = this.set_style(timecell['style']);
-            this.$ruler.append(
+            this.$ruler.append (
                 '<div id="'+ timecell['_id'] +'" class="timecell' + t_class + '" ' + start + ' ' + stop + ' style="' + style + timecell_style + '">' +
-                    this.time_duration(
+                    this.time_duration (
                         (timecell['stop'] ? (timecell['stop']) : this.options.current_timestamp) - (timecell['start'])
                     ) +
                 '</div>' +
                 '<div id="t' + timecell['_id'] + '" p_id="' + timecell['_id'] + '" class="timecell-event' + t_class + '" style="' + style + '"></div>'
             );
-            this.$prompts.append(
+            this.$prompts.append (
                 '<div id="l-prompt-' + timecell['_id'] + '" class="prompt" style="top:9px;left:' + (left - 44).toString() + 'px;">' +
                     '<div class="triangle-down"></div>' +
                     '<div class="body">' + this.timestamp_to_date(timecell['start']) + '</div>' +
                 '</div>' +
                 (timecell['stop'] ?
-                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:101px;left: ' + (left + width - 44).toString() + 'px;">' +
+                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:101px;left:' + (left + width - 44).toString() + 'px;">' +
                         '<div class="triangle-up"></div>' +
                         '<div class="body">' + this.timestamp_to_date(timecell['stop']) + '</div>' +
                     '</div>'
@@ -891,6 +922,16 @@ if (typeof jQuery === 'undefined') {
                 .mousedown(time_cell_mousedown_event)
                 .mousemove(time_cell_mousemove_event)
                 .mouseout(time_cell_mouseout_event);
+
+
+            t_element.dblclick(function(e){
+                //$("#dialog").dialog( "open" );
+                var id = $(this).attr("p_id");
+                _this.current_dbclick_timecell = timecell;
+                //alert("start:" + _this.timestamp_to_date(timecell['start'])+"stop:" + _this.timestamp_to_date(timecell['stop']));
+                $("#dialog").dialog( "open" );
+
+            });
 
             this.$ruler.find('#' + timecell['_id']).dblclick(function (e) {
 
@@ -958,7 +999,7 @@ if (typeof jQuery === 'undefined') {
             // TODO: fix this
             _this.options.current_timestamp = _this.frozen_current_timestamp + (new Date(_this.static_date_string) - _this.init_timestamp);
             if (_this.options.current_timestamp - _this.options.start_timestamp >= (3600 * 1000 * _this.options.hours_per_ruler)) {
-                // TODO: update time slider to next day if timeslider was not moved
+            // TODO: update time slider to next day if timeslider was not moved
             }
         }
     };
@@ -1074,6 +1115,7 @@ if (typeof jQuery === 'undefined') {
     };
 
     TimeSlider.prototype._edit_time_cell = function(options) {
+        console.log(options);
         var has_start = options.start !== undefined && options.start !== null;
         var has_stop = options.stop !== undefined && options.stop !== null && options.element.attr('stop_timestamp');
         //console.log("has_start:"+has_start +" |has_stop:"+has_stop);
@@ -1194,7 +1236,8 @@ if (typeof jQuery === 'undefined') {
                 switch (_this.clicked_on) {
                     case 'timecell':
                         if (_this.time_cell_selected) {
-                            //console.log("该事件触发1212::::"+"pos_x:"+pos_x +"_this.prev_cursor_x"+_this.prev_cursor_x);
+                            console.log("该事件触发1212::::"+"pos_x:"+pos_x +"_this.prev_cursor_x"+_this.prev_cursor_x);
+                            //_this.set_time_cell_position(pos_x - _this.prev_cursor_x);
                             _this.set_time_cell_position(pos_x - _this.prev_cursor_x);
                         }
                         break;
