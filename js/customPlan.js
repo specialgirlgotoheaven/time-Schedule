@@ -77,8 +77,6 @@
                 $('#'+this.options.dateType+i).TimeSlider(this.options.timeSliderOption);//初始化时间轴
             }
         }
-
-
     };
 
     $.fn[pluginName]=function(options){

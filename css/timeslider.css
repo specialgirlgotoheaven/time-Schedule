@@ -106,7 +106,7 @@
     font-style: normal;
     font-weight: 400;
     overflow: hidden;
-    background-color: #ffab7d;
+    background-color: #65bffc;/*#ffab7d*/
     opacity: 0.9;
     filter: alpha(Opacity=90);
     z-index: 4;
@@ -114,7 +114,7 @@
 }
 
 .time-slider .ruler .timecell.current {
-    background-color: #ff6d29;
+    background-color: #2EABF2;/*#ff6d29*/
     border-radius: 4px 0 0 4px;
 }
 
