@@ -50,7 +50,7 @@ if (typeof jQuery === 'undefined') {
         this.current_dbclick_timecell = {},
         this.current_dbclick_timecell_id = null,
         this.minute_per_graduation=null,
-        this.px_per_graduation = null,
+        this.px_per_graduation = null,//每个刻度有多少像素
         this.by_dialog_edit = null,
         this.init(element, options);
         return this;
@@ -150,8 +150,6 @@ if (typeof jQuery === 'undefined') {
         }
         this.add_events();
 
-        //this.get_dialog_value();
-
     };
     TimeSlider.prototype.get_dialog_value = function (){
         var _this =this;
@@ -169,48 +167,17 @@ if (typeof jQuery === 'undefined') {
                         _this.dialogInputValueObj.startTime = $("#dialog_Start")[0].value;
                         _this.dialogInputValueObj.stopTime = $("#dialog_Stop")[0].value;
                         var id = $("#current_dbclick_timecell_id").val();
-                        //current_dbclick_timecell
+
                         var start = new Date(_this.static_date +" "+_this.dialogInputValueObj.startTime).getTime();
                         var stop = new Date(_this.static_date +" "+_this.dialogInputValueObj.stopTime).getTime();
 
-
-                        /*
-                         TimeSlider.prototype.edit_timecell = function(options) {
-                         //console.log("edit_timecell")
-                         if (! options['_id'] || (! options['start'] && ! options['stop'])) {
-                         return;
-                         }
-                         options['element'] = this.$ruler.find('#' + options['_id']);
-                         if (options['element'].length) {
-                         options['l_prompt'] = this.$prompts.find('#l-prompt-' + options['_id'] + '.prompt');
-                         options['t_element'] = this.$ruler.find('#t' + options['_id']);
-                         options['r_prompt'] = this.$prompts.find('#r-prompt-' + options['_id'] + '.prompt');
-                         this._edit_time_cell(options);
-                         }
-                         };
-                        *
-                        *
-                        *
-                        * */
-                        /**
-                         *
-                         *  _this.time_cell_selected = {
-                            element: _this.$ruler.find('#' + id),
-                            l_prompt: _this.$prompts.find('#l-prompt-' + id + '.prompt'),
-                            t_element: $(this),
-                            hover: true
-                        };
-                         *
-                         *
-                         * */
-                        //$('#l-prompt-' + id + '.prompt') ;
                         var tempTimeCell = {};
                         tempTimeCell._id = id;
                         tempTimeCell.start = start;
                         tempTimeCell.stop = stop;
-                        //alert('kkkk');
+
                         _this.edit_timecell(tempTimeCell,_this);
-                        //$("#"+_this.current_dbclick_timecell._id).attr("start_timestamp",);
+
                         $("#dialog").dialog("close");
                     }
                 },
@@ -314,16 +281,6 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.timestamp_to_date = function(timestamp) {
         var datetime = new Date(timestamp);
-        //console.log("datetime:"+datetime);
-        /*
-         return ('0' + datetime.getDate().toString()).substr(-2) + '.' +
-         ('0' + (datetime.getMonth() + 1).toString()).substr(-2) + '.' +
-         datetime.getFullYear() + ' ' +
-         ('0' + datetime.getHours().toString()).substr(-2) + ':' +
-         ('0' + datetime.getMinutes().toString()).substr(-2) + ':' +
-         ('0' + datetime.getSeconds().toString()).substr(-2) +
-         (this.options.show_ms ? ('.' + ('00' + datetime.getMilliseconds().toString()).substr(-3)) : '');
-        * */
         return ('0' + datetime.getHours().toString()).substr(-2) + ':' +
             ('0' + datetime.getMinutes().toString()).substr(-2) + ':' +
             ('0' + datetime.getSeconds().toString()).substr(-2) +
@@ -366,32 +323,17 @@ if (typeof jQuery === 'undefined') {
     TimeSlider.prototype.add_events = function() {
         var _this = this;
 
-
         document.oncontextmenu = function(e){
             e.preventDefault();
         };
-/*        this.$ruler.dblclick(function(e){
-            e.stopPropagation();
-            e.preventDefault();
-
-            $("#dialog").dialog( "open" );
-
-        });*/
         _this.$element.mousedown(
 
             function(e){
                 _this.draw_new_timecell_mousedown = true;
-
-                //console.log("260");
-                //console.log(e);
                 _this.draw_new_timecell2(e);
                 if(e.button ==2){
                     //console.log("你点了右键");
-                }/*else if(e.button ==0){
-                 alert("你点了左键");
-                 }else if(e.button ==1){
-                 alert("你点了滚轮");
-                 }*/
+                }
             }
         );
 
@@ -399,9 +341,7 @@ if (typeof jQuery === 'undefined') {
             window.setInterval(this.set_current_timestamp(), this.options['update_timestamp_interval']);
             window.setInterval(this.set_running_elements(), this.options['update_interval']);
         }
-        //$('body').mouseup(this.mouse_up_event());
         _this.$element.mouseup(this.mouse_up_event());
-        //$('body').mousemove(this.cursor_moving_event());
         _this.$element.mousemove(this.cursor_moving_event());
         if (this.options.ruler_enable_move) {
             this.$ruler.find('.bg-event').mousedown(this.ruler_mouse_down_event());
@@ -429,8 +369,6 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype.add_graduations = function() {
         var leftMove = 40;
-        //var leftMove = this.greate_graduation_count == 0?"-28"
-
         var px_per_minute = this.$ruler.width() / (this.options.hours_per_ruler * 60);//每分钟多少像素
         var px_per_step = this.options.graduation_step;//每一格多少分钟
         var min_step = px_per_step / px_per_minute;//每个像素多少分钟
@@ -477,13 +415,6 @@ if (typeof jQuery === 'undefined') {
             else if (minute_caret / (60 * 1000) % medium_step == 0) {
                 caret_class = 'middle';
             }
-            //debugger
-            //console.log(this.graduation_title(date));
-/*            if(this.options.static_time == 24 && i == num_steps){
-                date = new Date(this.static_date_string.slice(0,10)+" "+"06:59:59");
-            }*/
-            //console.log("date");
-            //console.log(date);
             this.$ruler.append('<div id="hour' + i + '" class="graduation ' + caret_class + '" style="left: ' + left.toString() + 'px"></div>');
 
             this.$ruler.append(
@@ -561,7 +492,6 @@ if (typeof jQuery === 'undefined') {
         }
     };
     TimeSlider.prototype.draw_new_timecell2 = function (e) {
-        //this.prev_draw_new_cursor_x = this.get_cursor_x_position(e);
         this.options.draw_new_timecell_flag = true;
         var start_x = this.options.draw_new_timecell_start_x  = this.get_cursor_x_position(e);
         var tempInitDate = new Date(this.static_date_string.slice(0,10)+" 00:00:00").getTime();
@@ -573,62 +503,9 @@ if (typeof jQuery === 'undefined') {
             'start':(diff / this.px_per_ms)+tempInitDate,
             'stop':(diff / this.px_per_ms)+tempInitDate+ 3600*1000
         };
-        var add_new_cell = this.add_cell(tempTimecell);
-
-
-
-
-
-/*        var tempdate = this.timestamp_to_date(tempTimecell['start']).slice(0,3) + "00:00";
-        //var start2 = (diff / this.px_per_ms)+tempInitDate;
-
-        console.log("add_cell:"+this.timestamp_to_date(tempTimecell['start']));
-
-
-        var tempTimeCell2 = {
-            '_id':"draw_new_timecell_"+start_x+parseInt(Math.random()*10000),
-            //'start':(start_x / this.px_per_ms)+tempInitDate,
-            'start':tempdate.getTime(),
-            'stop':tempdate.getTime()+ 3600*1000
-        }
-
-        var id = tempTimeCell2._id;
-        var timecell = {
-            element: add_new_cell.element,
-            t_element: add_new_cell.t_element
-        };
-        var new_start = parseInt(add_new_cell.element.attr('start_timestamp')) + Math.round(diff_x / this.px_per_ms);
-        var new_stop = parseInt(add_new_cell.element.attr('stop_timestamp')) + Math.round(diff_x / this.px_per_ms);
-        timecell['l_prompt'] = add_new_cell.l_prompt;
-        timecell['r_prompt'] = add_new_cell.r_prompt;
-        timecell['start'] = new_start;
-        timecell['stop'] = new_stop;
-        this._edit_time_cell(timecell);*/
-
+        this.add_cell(tempTimecell);
     }
 
-
-/*    TimeSlider.prototype.draw_new_timecell = function (e) {
-        var _this = this;
-        _this.options.draw_new_timecell_flag = true;
-        _this.prev_draw_new_cursor_x = _this.get_cursor_x_position(e);
-        _this.options.draw_new_timecell_flag = true;
-        var temp=_this.options.draw_new_timecell_start_x = _this.get_cursor_x_position(e);
-        _this.options.draw_new_timecell_id = _this.options.draw_new_timecell_start_x;
-
-        _this.mark +=10000000;
-        var tempInitDate = new Date(_this.static_date_string.slice(0,10)+" 00:00:00").getTime();
-
-        var tempTimecell = {
-            '_id':"draw_new_timecell_"+temp+parseInt(Math.random()*10000),
-            'start':temp / _this.px_per_ms+tempInitDate,
-            'stop':temp / _this.px_per_ms+tempInitDate+ 50000 * _this.options.distance_between_gtitle
-        }
-        _this.is_mouse_down_left = true;
-        _this.clicked_on = true;
-        _this.add_timecell(tempTimecell);
-
-    }*/
 
 
     TimeSlider.prototype.edit_timecell = function(options,_this) {
@@ -646,7 +523,6 @@ if (typeof jQuery === 'undefined') {
     };
 
     TimeSlider.prototype.remove_timecell = function(timecell_id) {
-        //console.log("remove"+timecell_id);
         var timecell = this.$ruler.find('#' + timecell_id);
         var start = null;
         var stop = null;
@@ -670,7 +546,19 @@ if (typeof jQuery === 'undefined') {
             this.options.on_remove_timecell_callback(timecell_id, start, stop);
         }
     };
-
+    TimeSlider.prototype.displayTimecells = function(TimecellArr){
+        var resultTimeCell = [];
+        for(var i = 0;i < TimecellArr.length;i++){
+            if(TimecellArr[i]._id == undefined){
+                TimecellArr[i]._id = "displayTimecells"+Math.floor(Math.random()*10000);
+            }
+            resultTimeCell[i] = {};
+            resultTimeCell[i]._id = TimecellArr[i]._id;
+            resultTimeCell[i].start = new Date(this.static_date +" "+TimecellArr[i].start).getTime();
+            resultTimeCell[i].stop = new Date(this.static_date +" "+TimecellArr[i].stop).getTime();
+        }
+        this.add_cells(resultTimeCell);
+    }
     TimeSlider.prototype.get_all_timecells=function(){
         var timecells = [];
         var $timecells = this.$ruler.children('.timecell');
@@ -728,7 +616,6 @@ if (typeof jQuery === 'undefined') {
 
         var get_selected_area = function(e) {
             var width = parseFloat($(this).css('width'));
-            //console.log("///////////////////////////////////width:"+width);
             var pos_x = parseFloat(e.offsetX);
             if (_this.options.timecell_enable_move && _this.options.timecell_enable_resize) {
                 if (pos_x <= 3) {
@@ -813,16 +700,10 @@ if (typeof jQuery === 'undefined') {
                     t_element: $(this),
                     hover: true
                 };
-                //console.log(_this.time_cell_selected.element[0]);
-                //console.log("Id:"+_this.time_cell_selected.element[0].id);
-                var tempId = _this.time_cell_selected.element[0].id;
-                //console.log("start_timestamp:"+$("#"+tempId).attr("start_timestamp"));
-                //console.log("stop_timestamp:"+$("#"+tempId).attr("stop_timestamp"));
             }
         };
 
         var time_cell_mousemove_event = function(e) {
-            //console.log("time_cell_mousemove_event")
             if (! _this.is_mouse_down_left) {
                 var id = $(this).attr('p_id');
                 $(this).addClass('hover');
@@ -920,10 +801,6 @@ if (typeof jQuery === 'undefined') {
             }else{
                 left = (((timecell['start']) - this.options.start_timestamp) * this.px_per_ms);
             }
-            //left = (((timecell['start']) - new Date(_this.static_date_string.slice(0,10)+" 00:00:00").getTime()) * this.px_per_ms);
-            //console.log("left:"+left);
-            //this.options.start_timestamp = this.options.start_timestamp - Math.round(diff_x / this.px_per_ms);
-
             if (timecell['stop']) {
                 stop = 'stop_timestamp="' + (timecell['stop']).toString() + '"';
             }
@@ -972,15 +849,8 @@ if (typeof jQuery === 'undefined') {
 
 
             t_element.dblclick(function(e){
-
-                //$("#dialog").dialog( "open" );
                 var id =t_element.attr('p_id');
                 $("#current_dbclick_timecell_id").val(id);
-                //_this.current_dbclick_timecell = timecell;
-                //_this.current_dbclick_timecell._id = id;
-                //_this.current_dbclick_timecell_id = id;
-
-                //alert("start:" + _this.timestamp_to_date(timecell['start'])+"stop:" + _this.timestamp_to_date(timecell['stop']));
                 _this.get_dialog_value();
                 $("#dialog").dialog( "open" );
 
@@ -1005,10 +875,7 @@ if (typeof jQuery === 'undefined') {
                     _this.options.on_dblclick_timecell_callback(p_id, start, stop);
                 });
             }
-            //console.log("return timecell");
-            //_this.draw_new_timecell_obj = timecell;
             _this.draw_new_timecell_obj = timecell;
-            //console.log(_this.draw_new_timecell_obj);
             return timecell;
         }
         //debugger
@@ -1212,54 +1079,26 @@ if (typeof jQuery === 'undefined') {
 
         // move all time cell
         if (this.time_cell_selected.l_prompt && this.time_cell_selected.r_prompt) {
-            var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
-            var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            //var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            //var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x  / this.px_per_ms);
+            var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x / this.px_per_ms);
             timecell['l_prompt'] = this.time_cell_selected.l_prompt;
             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
             timecell['start'] = new_start;
             timecell['stop'] = new_stop;
             this._edit_time_cell(timecell);
-/*            //如果通过对话框的,编辑准确显示时间,否则只显示整点(拖拽的情况)
-            if(true){
-                var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x / this.px_per_ms);
-                var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x / this.px_per_ms);
-                timecell['l_prompt'] = this.time_cell_selected.l_prompt;
-                timecell['r_prompt'] = this.time_cell_selected.r_prompt;
-                timecell['start'] = new_start;
-                timecell['stop'] = new_stop;
-                this._edit_time_cell(timecell);
-            }else {
-                var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms );
-                var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms / this.px_per_graduation);
-                timecell['l_prompt'] = this.time_cell_selected.l_prompt;
-                timecell['r_prompt'] = this.time_cell_selected.r_prompt;
-                timecell['start'] = new_start;
-                timecell['stop'] = new_stop;
-                this._edit_time_cell(timecell);
-            }*/
-
             if (typeof this.options.on_move_timecell_callback == 'function') {
                 this.options.on_move_timecell_callback(id, new_start, new_stop);
             }
         }
         // resize left border
         else if (this.time_cell_selected.l_prompt) {
-            var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            //var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x  / this.px_per_ms);
             timecell['l_prompt'] = this.time_cell_selected.l_prompt;
             timecell['start'] = new_start;
             this._edit_time_cell(timecell);
-/*            //如果通过对话框的,编辑准确显示时间,否则只显示整点(拖拽的情况)
-            if(true) {
-                var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x / this.px_per_ms);
-                timecell['l_prompt'] = this.time_cell_selected.l_prompt;
-                timecell['start'] = new_start;
-                this._edit_time_cell(timecell);
-            }else {
-                var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation/ this.px_per_ms);
-                timecell['l_prompt'] = this.time_cell_selected.l_prompt;
-                timecell['start'] = new_start;
-                this._edit_time_cell(timecell);
-            }*/
             if (typeof this.options.on_resize_timecell_callback == 'function') {
                 this.options.on_resize_timecell_callback(
                     id,
@@ -1271,22 +1110,11 @@ if (typeof jQuery === 'undefined') {
         }
         // resize right border
         else if (this.time_cell_selected.r_prompt) {
-            var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            //var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
+            var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x / this.px_per_ms);
             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
             timecell['stop'] = new_stop;
             this._edit_time_cell(timecell);
-/*            //如果通过对话框的,编辑准确显示时间,否则只显示整点(拖拽的情况)
-            if(true) {
-                var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
-                timecell['r_prompt'] = this.time_cell_selected.r_prompt;
-                timecell['stop'] = new_stop;
-                this._edit_time_cell(timecell);
-            }else {
-                var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
-                timecell['r_prompt'] = this.time_cell_selected.r_prompt;
-                timecell['stop'] = new_stop;
-                this._edit_time_cell(timecell);
-            }*/
             if (typeof this.options.on_resize_timecell_callback == 'function') {
                 this.options.on_resize_timecell_callback(
                     id,
@@ -1297,24 +1125,7 @@ if (typeof jQuery === 'undefined') {
             }
         }
     };
-    /**
-     * 如果通过对话框的,编辑准确显示时间,否则只显示整点(拖拽的情况)
-     * todo 整成一个函数
-     * */
-    TimeSlider.prototype.edit_timecell_by_dialog_or_not = function(timecell,diff_x){
-        this._edit_time_cell(timecell);
-/*        if($("#by_dialog_edit").val() == 'true') {
-            this._edit_time_cell(timecell);
-        }else {
-            var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms );
-            var new_stop = parseInt(this.time_cell_selected.element.attr('stop_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms / this.px_per_graduation);
-            timecell['l_prompt'] = this.time_cell_selected.l_prompt;
-            timecell['r_prompt'] = this.time_cell_selected.r_prompt;
-            timecell['start'] = new_start;
-            timecell['stop'] = new_stop;
-            this._edit_time_cell(timecell);
-        }*/
-    }
+
     TimeSlider.prototype.getElementLeft = function(element){
         var actualLeft = element.offsetLeft;
         var current = element.offsetParent;
@@ -1349,9 +1160,6 @@ if (typeof jQuery === 'undefined') {
                 switch (_this.clicked_on) {
                     case 'timecell':
                         if (_this.time_cell_selected) {
-                            //console.log("该事件触发1212::::"+"pos_x:"+pos_x +"_this.prev_cursor_x"+_this.prev_cursor_x);
-                            //_this.set_time_cell_position(pos_x - _this.prev_cursor_x);
-
                             _this.set_time_cell_position(pos_x - _this.prev_cursor_x);
                         }
                         break;
@@ -1371,8 +1179,7 @@ if (typeof jQuery === 'undefined') {
         return function(e) {
             e.preventDefault();
             if(_this.draw_new_timecell_mousedown && _this.options.draw_new_timecell_flag && _this.draw_new_timecell_obj!=null){
-                //$("#t"+_this.draw_new_timecell_obj._id).addClass("current");
-                $("#t"+_this.draw_new_timecell_obj._id).width($("#"+_this.draw_new_timecell_obj._id).width());
+               $("#t"+_this.draw_new_timecell_obj._id).width($("#"+_this.draw_new_timecell_obj._id).width());
             }
             _this.draw_new_timecell_mousedown = false;
 
@@ -1403,15 +1210,6 @@ if (typeof jQuery === 'undefined') {
                             if (typeof _this.options.on_change_ruler_callback == 'function') {
                                 _this.options.on_change_ruler_callback.bind(_this)(_this.options.start_timestamp);
                             }
-                        }
-                        break;
-                    default://画方块的情况
-                        {//add_cell    //$('#slider123').data().timeslider
-                            console.log("1189:我在这里画方块");
-
-                            // _this.mark +=10000000;
-                            // _this.add_timecell({_id:"vccc2"+_this.mark,start:new Date().getTime()+_this.mark,stop:new Date().getTime()+5000000+_this.mark});
-
                         }
                         break;
                 }

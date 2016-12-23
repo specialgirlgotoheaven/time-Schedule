@@ -10,53 +10,57 @@
 	<link href="../css/customPlan.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-	<div>
+<!--	<div>
 		<span>
 			<input type="radio" name="planType" value="week" checked><label>按周制定计划</label>
 			<input type="radio" name="planType" value="holiday"><label>按假期制定计划</label>
 		</span>
-	</div>
+	</div>-->
 	<div id="customPlanWeek" class="customPlan_panel">
 		<button class="clearAll">清空</button>
 	</div>
-	<div id="customPlanHoliday" class="customPlan_panel" style="display: none">
+	<button id = 'submit'>提交</button>
+<!--	<div id="customPlanHoliday" class="customPlan_panel" style="display: none">
 		<button class="clearAll">清空</button>
-	</div>
+	</div>-->
 	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/Wdatepicker/WdatePicker.js"></script>
 	<script src="../js/jquery-ui.js"></script>
 	<script src="../js/timeslider.js"></script>
 	<script src="../js/customPlan.js"></script>
 	<script type="text/javascript">
         //var current_time = (new Date("2016-12-19 12:00:00")).getTime();//+ ((new Date("2016-12-19 12:00:00")).getTimezoneOffset() * 60 * 1000 * -1)
 		$(document).ready(function () {
-
-
-		if($("input[name='planType']").val() == 'week'){
-			$("#customPlanWeek").show();
-			$("#customPlanWeek").customPlan();
-		}else if($("input[name='planType']").val() == 'holiday'){
-			$("#customPlanHoliday").show();
-			$("#customPlanHoliday").customPlan({dateType:"holiday"});
-		}
-
-		$("input[name='planType']").change(function(){
-			if($(this).val() == 'week'){
-				$("#customPlanHoliday").hide();
+			$("#customPlanWeek").customPlan();//$("#customPlanHoliday").customPlan({dateType:"holiday"});
+/*			if($("input[name='planType']").val() == 'week'){
 				$("#customPlanWeek").show();
 				$("#customPlanWeek").customPlan();
-			}else if($(this).val() == 'holiday'){
-				$("#customPlanWeek").hide();
+			}else if($("input[name='planType']").val() == 'holiday'){
 				$("#customPlanHoliday").show();
 				$("#customPlanHoliday").customPlan({dateType:"holiday"});
 			}
-		});
 
-		//console.log($('#slider123').data().timeslider.get_all_timecells());
+			$("input[name='planType']").change(function(){
+				if($(this).val() == 'week'){
+					$("#customPlanHoliday").hide();
+					$("#customPlanWeek").show();
+					$("#customPlanWeek").customPlan();
+				}else if($(this).val() == 'holiday'){
+					$("#customPlanWeek").hide();
+					$("#customPlanHoliday").show();
+					$("#customPlanHoliday").customPlan({dateType:"holiday"});
+				}
+			});*/
+			//console.log($('#slider123').data().timeslider.get_all_timecells());
+			$("#submit").click(function(){
+				console.log($("#customPlanWeek").data().plugin_customPlan.getdata());
+			});
+			//$("#customPlanWeek").data().plugin_customPlan.showdata(obj);
 		});
 	</script>
 <div id="dialog" title="Basic dialog" style="display: none">
-	<div><label>开始时间:</label><input id="dialog_Start" type="text"></div>
-	<div><label>结束时间:</label><input id="dialog_Stop" type="text"></div>
+	<div><label>开始时间:</label><input id="dialog_Start" type="text"  class="Wdate" onClick="WdatePicker({dateFmt:'HH:mm:ss'})"></div><!--,minDate:'%H:%m:%s',maxDate:'%H:%m:%s'-->
+	<div><label>结束时间:</label><input id="dialog_Stop" type="text"  class="Wdate"  onClick="WdatePicker({dateFmt:'HH:mm:ss'})"></div><!--,minDate:'%H:%m:%s',maxDate:'%H:%m:%s'-->
 	<input type="hidden" id="current_dbclick_timecell_id" value="">
 	<input id="by_dialog_edit" type="hidden" value=""/>
 </div>
