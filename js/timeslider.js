@@ -105,7 +105,6 @@ if (typeof jQuery === 'undefined') {
     };
 
     TimeSlider.prototype.init = function(element, options) {
-        //console.log("welcome timeslider");
         this.$element = $(element);
         this.$element.append('<div class="graduation-title" style="display:none">init</div>');
         this.gt_height = this.$element.find('.graduation-title').height();
