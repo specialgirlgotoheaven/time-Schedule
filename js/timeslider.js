@@ -1048,13 +1048,23 @@ if (typeof jQuery === 'undefined') {
                 stop = parseInt(options.element.attr('stop_timestamp'));
             }
             var left = (options.start - this.options.start_timestamp) * this.px_per_ms;
+            left = left > 0?left :0;
+
             var width = ((stop !== null ? stop : this.options.current_timestamp) - options.start) * this.px_per_ms;
+            //var tempTimecellLeft = this.$element.find('.timecell').css('left').toString().slice(0,-2);
+            left = (width + left) > 799 ? this.$element.width() - width : left;
+            //(width + left) > 799
+            //console.log('1:'+(width + left)+"2:"+ this.$element.width());
             options.element.attr('start_timestamp', options.start);
             options.element.css('left', left);
             options.element.css('width', width);
             options.t_element.css('left', left);
             options.t_element.css('width', width);
-            options.l_prompt.css('left', left - 44);
+/*            var promptLeft = left - 44;
+            promptLeft = promptLeft > 0?promptLeft :0;
+            promptLeft = (width + promptLeft) > 799 ? this.$element.width() - width : promptLeft;
+            options.l_prompt.css('left', promptLeft);*/
+            options.l_prompt.css('left', left -44);
         }
         if (has_stop) {
             var start = has_start ? options.start : parseInt(options.element.attr('start_timestamp'));
@@ -1063,6 +1073,12 @@ if (typeof jQuery === 'undefined') {
             options.element.attr('stop_timestamp', options.stop);
             options.element.css('width', width);
             options.t_element.css('width', width);
+/*            var promptLeft = left - 44;
+            promptLeft = promptLeft > 0?promptLeft :0;
+            promptLeft = (width + promptLeft) > 799 ? this.$element.width() - width : promptLeft;
+            options.l_prompt.css('left', promptLeft);
+            options.r_prompt.css('left', promptLeft + width - 44);*/
+            options.l_prompt.css('left', left - 44);
             options.r_prompt.css('left', left + width - 44);
         }
         this.set_time_duration(options.element);
@@ -1154,6 +1170,8 @@ if (typeof jQuery === 'undefined') {
         var _this = this;
         return function(e) {
             var pos_x = _this.get_cursor_x_position(e);
+
+            //var tempMark1 = pos_x - _this.getElementLeft(_this.$element[0] );
 
             if (_this.is_mouse_down_left) {
                 switch (_this.clicked_on) {
