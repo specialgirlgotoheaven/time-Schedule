@@ -60,7 +60,13 @@
                         $(this).removeClass("hasCleared");
                     }
                 }else{
-                    //todo 全选
+                    //todo 单行全选
+                    //console.log("全选");
+
+                    //一定要先清空后全选,这里代码逻辑上面已经清空,这里不做清空处理
+                    //$("#"+tempId).data().timeslider.selectTheRowAll();
+
+
                 }
 
             });
@@ -108,7 +114,7 @@
                 var tempHolidayObj = {};
                 for(var i=0;i < this.options.holidayRows.length;i++){
                     var arr = $('#'+this.options.dateType+i).data().timeslider.get_all_timecells();
-                    tempHolidayObj[i] = arr;
+                    tempHolidayObj[i] = this.reverseTimeCells(arr);
                 }
                 return tempHolidayObj;
             }

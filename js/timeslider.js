@@ -22,8 +22,8 @@ if (typeof jQuery === 'undefined') {
 (function ($) {
     var TimeSlider = function(element, options) {
         this.static_date_string="2016-12-19 12:00:00",
-            this.static_date = "2016-12-19",
-            this.$element = null;
+        this.static_date = "2016-12-19",
+        this.$element = null;
         this.$ruler = null;
         this.$prompts = null;
         this.options = null;
@@ -41,18 +41,20 @@ if (typeof jQuery === 'undefined') {
         this.mark = 0;
         this.greate_graduation_count = 0;
         this.draw_new_timecell_obj = null,
-            this.draw_new_timecell_id = null,
-            this.draw_new_timecell_mousedown = null,
-            this.draw_new_timecell_select_obj = null,
-            this.prev_draw_new_cursor_x = null,
-            this.delete_once = null,
-            this.dialogInputValueObj = {},
-            this.current_dbclick_timecell = {},
-            this.current_dbclick_timecell_id = null,
-            this.minute_per_graduation=null,
-            this.px_per_graduation = null,//每个刻度有多少像素
-            this.by_dialog_edit = null,
-            this.init(element, options);
+        this.draw_new_timecell_id = null,
+        this.draw_new_timecell_mousedown = null,
+        this.draw_new_timecell_select_obj = null,
+        this.prev_draw_new_cursor_x = null,
+        this.delete_once = null,
+        this.dialogInputValueObj = {},
+        this.current_dbclick_timecell = {},
+        this.current_dbclick_timecell_id = null,
+        this.minute_per_graduation=null,
+        this.px_per_graduation = null,//每个刻度有多少像素
+        this.by_dialog_edit = null,
+        this.rulerLeftFlagBorder = false,
+        this.rulerRightFlagBorder = false,
+        this.init(element, options);
         return this;
     };
 
@@ -191,7 +193,19 @@ if (typeof jQuery === 'undefined') {
                 $("#by_dialog_edit").val("false");
             }
         });
-    }
+    };
+    TimeSlider.prototype.selectTheRowAll = function(){
+        console.log("TimeSlider 全选");
+        var id = "selectAll"+Math.ceil(Math.random() * 10000);
+        var start = new Date(this.static_date +" 23:59:59").getTime();
+        var stop = new Date(this.static_date +" 23:59:59").getTime();
+
+        var tempTimeCell = {};
+        tempTimeCell._id = id;
+        tempTimeCell.start = start;
+        tempTimeCell.stop = stop;
+        this.edit_timecell(tempTimeCell,this);
+    };
 
     TimeSlider.prototype.get_defaults = function() {
         return TimeSlider.DEFAULTS;
@@ -355,9 +369,6 @@ if (typeof jQuery === 'undefined') {
                 );
             });
         }
-
-
-
     };
 
     TimeSlider.prototype.add_time_caret = function() {
@@ -1048,7 +1059,13 @@ if (typeof jQuery === 'undefined') {
                 stop = parseInt(options.element.attr('stop_timestamp'));
             }
             var left = (options.start - this.options.start_timestamp) * this.px_per_ms;
+            //left = left > 0 ? left : 0;//左边不超出尺子范围
+
             var width = ((stop !== null ? stop : this.options.current_timestamp) - options.start) * this.px_per_ms;
+
+            //left = (width + left) > 799 ? this.$element.width() - width : left;//右边不超出尺子范围
+            //this.rulerLeftFlagBorder = false,
+            //this.rulerRightFlagBorder = false,
             options.element.attr('start_timestamp', options.start);
             options.element.css('left', left);
             options.element.css('width', width);
@@ -1059,7 +1076,10 @@ if (typeof jQuery === 'undefined') {
         if (has_stop) {
             var start = has_start ? options.start : parseInt(options.element.attr('start_timestamp'));
             var left = (start - this.options.start_timestamp) * this.px_per_ms;
+            //left = left > 0?left :0;//左边不超出尺子范围
+
             var width = (options.stop - start) * this.px_per_ms;
+            //left = (width + left) > 799 ? this.$element.width() - width : left;//右边不超出尺子范围
             options.element.attr('stop_timestamp', options.stop);
             options.element.css('width', width);
             options.t_element.css('width', width);
@@ -1086,14 +1106,15 @@ if (typeof jQuery === 'undefined') {
             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
             timecell['start'] = new_start;
             timecell['stop'] = new_stop;
-            this._edit_time_cell(timecell);
+            if ((new_start - this.options.start_timestamp) >0 && new_stop < parseInt(new Date(this.static_date + " 23:59:59").getTime())){
+                this._edit_time_cell(timecell);
+            }
             if (typeof this.options.on_move_timecell_callback == 'function') {
                 this.options.on_move_timecell_callback(id, new_start, new_stop);
             }
         }
         // resize left border
         else if (this.time_cell_selected.l_prompt) {
-            //var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x * this.px_per_graduation / this.px_per_ms);
             var new_start = parseInt(this.time_cell_selected.element.attr('start_timestamp')) + Math.round(diff_x  / this.px_per_ms);
             timecell['l_prompt'] = this.time_cell_selected.l_prompt;
             timecell['start'] = new_start;
