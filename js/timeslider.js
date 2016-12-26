@@ -515,9 +515,6 @@ if (typeof jQuery === 'undefined') {
         };
         this.add_cell(tempTimecell);
     }
-
-
-
     TimeSlider.prototype.edit_timecell = function(options,_this) {
         console.log("edit_timecell")
         if (! options['_id'] || (! options['start'] && ! options['stop'])) {

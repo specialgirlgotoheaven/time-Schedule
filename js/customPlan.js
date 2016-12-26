@@ -74,16 +74,18 @@
 
         },
         createDom:function(typeArr){
+            var elementId = this.$element[0].id;
             for(var i=0;i < typeArr.length;i++){
                 this.$element.append(
                     "<div class=\"tsc row\">"
                         +"<div class=\"rowLeft\">"+typeArr[i]+"</div>"
                         +"<div class=\"rowRight\">"
-                            +"<div id='"+this.options.dateType+i+"' class=\"time-slider\" style='width:"+this.options.rulerWidth+"'></div>"
+                            +"<div id='"+elementId+this.options.dateType+i+"' class=\"time-slider\" style='width:"+this.options.rulerWidth+"'></div>"
                         +"</div>"
                     +"</div>"
                 );
-                $('#'+this.options.dateType+i).TimeSlider(this.options.timeSliderOption);//初始化时间轴
+
+                $('#'+elementId+this.options.dateType+i).TimeSlider(this.options.timeSliderOption);//初始化时间轴
             }
         },
         getdata:function(){
@@ -152,7 +154,6 @@
     };
 
     $.fn[pluginName]=function(options){
-        //console.log(options);
         this.each(function(){
             if(!$.data(this,"plugin_"+pluginName)){
                 $.data(this,"plugin_"+pluginName,new customPlan(this,options));
