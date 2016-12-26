@@ -22,8 +22,8 @@ if (typeof jQuery === 'undefined') {
 (function ($) {
     var TimeSlider = function(element, options) {
         this.static_date_string="2016-12-19 12:00:00",
-        this.static_date = "2016-12-19",
-        this.$element = null;
+            this.static_date = "2016-12-19",
+            this.$element = null;
         this.$ruler = null;
         this.$prompts = null;
         this.options = null;
@@ -41,18 +41,18 @@ if (typeof jQuery === 'undefined') {
         this.mark = 0;
         this.greate_graduation_count = 0;
         this.draw_new_timecell_obj = null,
-        this.draw_new_timecell_id = null,
-        this.draw_new_timecell_mousedown = null,
-        this.draw_new_timecell_select_obj = null,
-        this.prev_draw_new_cursor_x = null,
-        this.delete_once = null,
-        this.dialogInputValueObj = {},
-        this.current_dbclick_timecell = {},
-        this.current_dbclick_timecell_id = null,
-        this.minute_per_graduation=null,
-        this.px_per_graduation = null,//每个刻度有多少像素
-        this.by_dialog_edit = null,
-        this.init(element, options);
+            this.draw_new_timecell_id = null,
+            this.draw_new_timecell_mousedown = null,
+            this.draw_new_timecell_select_obj = null,
+            this.prev_draw_new_cursor_x = null,
+            this.delete_once = null,
+            this.dialogInputValueObj = {},
+            this.current_dbclick_timecell = {},
+            this.current_dbclick_timecell_id = null,
+            this.minute_per_graduation=null,
+            this.px_per_graduation = null,//每个刻度有多少像素
+            this.by_dialog_edit = null,
+            this.init(element, options);
         return this;
     };
 
@@ -401,7 +401,7 @@ if (typeof jQuery === 'undefined') {
             if(i == 0){
                 //leftMove = 15;
             }else if(i == num_steps){
-               // leftMove = 52;
+                // leftMove = 52;
             }else {
                 leftMove = 40;
             }
@@ -418,7 +418,7 @@ if (typeof jQuery === 'undefined') {
 
             this.$ruler.append(
                 '<div id="graduation-title-hour' + i + '" class="graduation-title' + (caret_class ? '' : ' hidden') + '" style="left:' + (left - leftMove).toString() + 'px">' +
-                    this.graduation_title(date) +
+                this.graduation_title(date) +
                 '</div>'
             );
             minute_caret += min_step * 60 * 1000;
@@ -445,8 +445,8 @@ if (typeof jQuery === 'undefined') {
             var left = (start - this.options.start_timestamp) * this.px_per_ms;
             this.$prompts.append(
                 '<div id="r-prompt-' + timecell_id + '" class="prompt" style="top:101px;left: ' + (left + width - 44).toString() + 'px;">' +
-                    '<div class="triangle-up"></div>' +
-                    '<div class="body">' + this.timestamp_to_date(stop) + '</div>' +
+                '<div class="triangle-up"></div>' +
+                '<div class="body">' + this.timestamp_to_date(stop) + '</div>' +
                 '</div>');
             running_timecell.removeClass('current');
             this.$ruler.find('#t' + timecell_id).removeClass('current');
@@ -811,22 +811,22 @@ if (typeof jQuery === 'undefined') {
             var timecell_style = this.set_style(timecell['style']);
             this.$ruler.append (
                 '<div id="'+ timecell['_id'] +'" class="timecell' + t_class + '" ' + start + ' ' + stop + ' style="' + style + timecell_style + '">' +
-                    this.time_duration (
-                        (timecell['stop'] ? (timecell['stop']) : this.options.current_timestamp) - (timecell['start'])
-                    ) +
+                this.time_duration (
+                    (timecell['stop'] ? (timecell['stop']) : this.options.current_timestamp) - (timecell['start'])
+                ) +
                 '</div>' +
                 '<div id="t' + timecell['_id'] + '" p_id="' + timecell['_id'] + '" class="timecell-event' + t_class + '" style="' + style + '"></div>'
             );
             this.$prompts.append (
                 '<div id="l-prompt-' + timecell['_id'] + '" class="prompt" style="top:9px;left:' + (left - 44).toString() + 'px;">' +
-                    '<div class="triangle-down"></div>' +
-                    '<div class="body">' + this.timestamp_to_date(timecell['start']) + '</div>' +
+                '<div class="triangle-down"></div>' +
+                '<div class="body">' + this.timestamp_to_date(timecell['start']) + '</div>' +
                 '</div>' +
                 (timecell['stop'] ?
-                    '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:101px;left:' + (left + width - 44).toString() + 'px;">' +
-                        '<div class="triangle-up"></div>' +
-                        '<div class="body">' + this.timestamp_to_date(timecell['stop']) + '</div>' +
-                    '</div>'
+                '<div id="r-prompt-' + timecell['_id'] + '" class="prompt" style="top:101px;left:' + (left + width - 44).toString() + 'px;">' +
+                '<div class="triangle-up"></div>' +
+                '<div class="body">' + this.timestamp_to_date(timecell['stop']) + '</div>' +
+                '</div>'
                     : '')
             );
 
@@ -918,7 +918,7 @@ if (typeof jQuery === 'undefined') {
             // TODO: fix this
             _this.options.current_timestamp = _this.frozen_current_timestamp + (new Date(_this.static_date_string) - _this.init_timestamp);
             if (_this.options.current_timestamp - _this.options.start_timestamp >= (3600 * 1000 * _this.options.hours_per_ruler)) {
-            // TODO: update time slider to next day if timeslider was not moved
+                // TODO: update time slider to next day if timeslider was not moved
             }
         }
     };
@@ -949,8 +949,8 @@ if (typeof jQuery === 'undefined') {
             //var left = this.options.draw_new_timecell_start_x - this.getElementLeft(_this.$element[0]);
 
             var width = (($(this).attr('stop_timestamp')
-                ? parseInt($(this).attr('stop_timestamp'))
-                : _this.options.current_timestamp) - start_timestamp) * _this.px_per_ms;
+                    ? parseInt($(this).attr('stop_timestamp'))
+                    : _this.options.current_timestamp) - start_timestamp) * _this.px_per_ms;
             $(this).css('left', left);
             $(this).css('width', width);
             _this.$prompts.find('#l-prompt-' + $(this).attr('id') + '.prompt').css(
@@ -1035,7 +1035,7 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.prototype._edit_time_cell = function(options) {
         //console.log(options);
-       // $("#by_dialog_edit").val("true")
+        // $("#by_dialog_edit").val("true")
         var has_start = options.start !== undefined && options.start !== null;
         var has_stop = options.stop !== undefined && options.stop !== null && options.element.attr('stop_timestamp');
         //console.log("has_start:"+has_start +" |has_stop:"+has_stop);
@@ -1048,23 +1048,13 @@ if (typeof jQuery === 'undefined') {
                 stop = parseInt(options.element.attr('stop_timestamp'));
             }
             var left = (options.start - this.options.start_timestamp) * this.px_per_ms;
-            left = left > 0?left :0;
-
             var width = ((stop !== null ? stop : this.options.current_timestamp) - options.start) * this.px_per_ms;
-            //var tempTimecellLeft = this.$element.find('.timecell').css('left').toString().slice(0,-2);
-            left = (width + left) > 799 ? this.$element.width() - width : left;
-            //(width + left) > 799
-            //console.log('1:'+(width + left)+"2:"+ this.$element.width());
             options.element.attr('start_timestamp', options.start);
             options.element.css('left', left);
             options.element.css('width', width);
             options.t_element.css('left', left);
             options.t_element.css('width', width);
-/*            var promptLeft = left - 44;
-            promptLeft = promptLeft > 0?promptLeft :0;
-            promptLeft = (width + promptLeft) > 799 ? this.$element.width() - width : promptLeft;
-            options.l_prompt.css('left', promptLeft);*/
-            options.l_prompt.css('left', left -44);
+            options.l_prompt.css('left', left - 44);
         }
         if (has_stop) {
             var start = has_start ? options.start : parseInt(options.element.attr('start_timestamp'));
@@ -1073,12 +1063,6 @@ if (typeof jQuery === 'undefined') {
             options.element.attr('stop_timestamp', options.stop);
             options.element.css('width', width);
             options.t_element.css('width', width);
-/*            var promptLeft = left - 44;
-            promptLeft = promptLeft > 0?promptLeft :0;
-            promptLeft = (width + promptLeft) > 799 ? this.$element.width() - width : promptLeft;
-            options.l_prompt.css('left', promptLeft);
-            options.r_prompt.css('left', promptLeft + width - 44);*/
-            options.l_prompt.css('left', left - 44);
             options.r_prompt.css('left', left + width - 44);
         }
         this.set_time_duration(options.element);
@@ -1171,8 +1155,6 @@ if (typeof jQuery === 'undefined') {
         return function(e) {
             var pos_x = _this.get_cursor_x_position(e);
 
-            //var tempMark1 = pos_x - _this.getElementLeft(_this.$element[0] );
-
             if (_this.is_mouse_down_left) {
                 switch (_this.clicked_on) {
                     case 'timecell':
@@ -1196,7 +1178,7 @@ if (typeof jQuery === 'undefined') {
         return function(e) {
             e.preventDefault();
             if(_this.draw_new_timecell_mousedown && _this.options.draw_new_timecell_flag && _this.draw_new_timecell_obj!=null){
-               $("#t"+_this.draw_new_timecell_obj._id).width($("#"+_this.draw_new_timecell_obj._id).width());
+                $("#t"+_this.draw_new_timecell_obj._id).width($("#"+_this.draw_new_timecell_obj._id).width());
             }
             _this.draw_new_timecell_mousedown = false;
 
@@ -1270,7 +1252,7 @@ if (typeof jQuery === 'undefined') {
                 if (typeof options == 'string') {
                     switch (options) {
                         case 'get_all':
-                           data.get_all_timecells();
+                            data.get_all_timecells();
                             break;
                         case 'add':
                             data.add_timecell(timecell);
