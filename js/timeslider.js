@@ -194,7 +194,7 @@ if (typeof jQuery === 'undefined') {
             }
         });
     };
-    TimeSlider.prototype.selectTheRowAll = function(){
+/*    TimeSlider.prototype.selectTheRowAll = function(){
         console.log("TimeSlider 全选");
         var id = "selectAll"+Math.ceil(Math.random() * 10000);
         var start = new Date(this.static_date +" 23:59:59").getTime();
@@ -205,7 +205,7 @@ if (typeof jQuery === 'undefined') {
         tempTimeCell.start = start;
         tempTimeCell.stop = stop;
         this.edit_timecell(tempTimeCell,this);
-    };
+    };*/
 
     TimeSlider.prototype.get_defaults = function() {
         return TimeSlider.DEFAULTS;
@@ -339,7 +339,7 @@ if (typeof jQuery === 'undefined') {
         document.oncontextmenu = function(e){
             e.preventDefault();
         };
-        _this.$element.mousedown(
+        _this.$ruler.mousedown(
 
             function(e){
                 _this.draw_new_timecell_mousedown = true;
