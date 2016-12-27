@@ -89,12 +89,13 @@
             }
         },
         getdata:function(){
+            var elementId = this.$element[0].id;
             if(this.options.dateType == "week"){
                 var tempWeekObj = {};
                 tempWeekObj.weekTimeName = this.options.weekTimeName;
                 tempWeekObj.mark = this.options.mark;
                 for(var i=0;i < this.options.weekRows.length;i++){
-                    var arr = $('#'+this.options.dateType+i).data().timeslider.get_all_timecells();
+                    var arr = $('#'+elementId+this.options.dateType+i).data().timeslider.get_all_timecells();
                     if(i == 0){
                         tempWeekObj.mondayTimeGroup = this.reverseTimeCells(arr);
                     }else if( i == 1){
