@@ -42,10 +42,11 @@
         },
         bind:function () {
             var _this=this;
+            var elementId = this.$element[0].id;
             //清空
             $(_this.$element).find(".clearAll").click(function(){
                 for(var i=0;i < _this.currentType.length; i++){
-                    $('#'+_this.options.dateType+i).data().timeslider.remove_all_timecells();
+                    $('#'+elementId+_this.options.dateType+i).data().timeslider.remove_all_timecells();
                 }
             });
             //单行清空&全选
