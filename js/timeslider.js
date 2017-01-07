@@ -9,7 +9,6 @@ if (typeof jQuery === 'undefined') {
     throw new Error('Timeslider\'s JavaScript requires jQuery')
 }
 
-
 (function ($) {
     'use strict';
     var version = $.fn.jquery.split(' ')[0].split('.');
@@ -18,10 +17,9 @@ if (typeof jQuery === 'undefined') {
     }
 }(jQuery));
 
-
 (function ($) {
     var TimeSlider = function(element, options) {
-        this.static_date_string="2016-12-19 12:00:00",
+        this.static_date_string = "2016-12-19 12:00:00",
         this.static_date = "2016-12-19",
         this.$element = null;
         this.$ruler = null;
@@ -62,7 +60,7 @@ if (typeof jQuery === 'undefined') {
 
     TimeSlider.DEFAULTS = {
         //start_timestamp: (new Date(this.static_date_string)).getTime() + ((new Date(this.static_date_string)).getTimezoneOffset() * 60 * 1000 * -1),   // left border
-        start_timestamp: (new Date("2016-12-19 00:00:00")).getTime(),   // left border //(new Date(this.static_date_string)).getTime()
+        start_timestamp: (new Date("2016-12-19 00:00:00")).getTime(),// left border //(new Date(this.static_date_string)).getTime()
         current_timestamp: (new Date(this.static_date_string)).getTime(), // current timestamp
         hours_per_ruler: 24,                    //一把尺子上有几个小时 length of graduation ruler in hours (min 1, max 48)
         graduation_step: 10,                    //每一小格多少分钟 minimum pixels between graduations
@@ -80,20 +78,17 @@ if (typeof jQuery === 'undefined') {
         on_remove_timecell_callback: null,
         on_remove_all_timecells_callback: null,
         on_dblclick_timecell_callback: null,
-        on_move_timecell_callback: null,
-        on_resize_timecell_callback: null,
-        on_change_timecell_callback: null,
-        on_dblclick_ruler_callback: null,
-        on_move_ruler_callback: null,
-        on_change_ruler_callback: null,
-        draw_new_timecell_flag:null,
+        on_move_timecell_callback : null,
+        on_resize_timecell_callback : null,
+        on_change_timecell_callback : null,
+        on_dblclick_ruler_callback : null,
+        on_move_ruler_callback : null,
+        on_change_ruler_callback : null,
+        draw_new_timecell_flag :null,
 
+        draw_new_timecell_start_x :null,
 
-        draw_new_timecell_start_x:null,
-
-
-
-        static_time:24,//固定24小时
+        static_time : 24,//固定24小时
         ////////////////////////////////
         my_wId:'w',
         my_index:0,
@@ -115,7 +110,7 @@ if (typeof jQuery === 'undefined') {
             '<div class="ruler" style="height:' + (this.$element.height() + this.gt_height) + 'px;"></div>' +
             '<div class="prompts" style="top:-' + (this.$element.height() * 2 + this.gt_height) + 'px;"></div>'
         );
-        this.$element.height(this.$element.height() + this.gt_height);
+        this.$element.height(this.$element.height() + this.gt_height);//css中设置的高度加上字体的高度
         this.$ruler = this.$element.find('.ruler');
         this.$prompts = this.$element.find('.prompts');
 
@@ -127,7 +122,7 @@ if (typeof jQuery === 'undefined') {
         }
         this.options = this.get_options(options);
 
-        this.px_per_ms = this.$element.width() / (this.options.hours_per_ruler * 3600 * 1000);
+        this.px_per_ms = this.$element.width() / (this.options.hours_per_ruler * 3600 * 1000);//每毫秒占多少像素
 
         // append background color and event layout
         this.$ruler.append(
@@ -150,7 +145,6 @@ if (typeof jQuery === 'undefined') {
             }
         }
         this.add_events();
-
     };
     TimeSlider.prototype.get_dialog_value = function (){
         var _this =this;
@@ -426,12 +420,20 @@ if (typeof jQuery === 'undefined') {
                 caret_class = 'middle';
             }
             this.$ruler.append('<div id="hour' + i + '" class="graduation ' + caret_class + '" style="left: ' + left.toString() + 'px"></div>');
+            if(i == num_steps){
+                this.$ruler.append(
+                    '<div id="graduation-title-hour' + i + '" class="graduation-title' + (caret_class ? '' : ' hidden') + '" style="left:' + (left - leftMove).toString() + 'px">' +
+                    '23:59:59' +
+                    '</div>'
+                );
+            }else{
+                this.$ruler.append(
+                    '<div id="graduation-title-hour' + i + '" class="graduation-title' + (caret_class ? '' : ' hidden') + '" style="left:' + (left - leftMove).toString() + 'px">' +
+                    this.graduation_title(date) +
+                    '</div>'
+                );
+            }
 
-            this.$ruler.append(
-                '<div id="graduation-title-hour' + i + '" class="graduation-title' + (caret_class ? '' : ' hidden') + '" style="left:' + (left - leftMove).toString() + 'px">' +
-                this.graduation_title(date) +
-                '</div>'
-            );
             minute_caret += min_step * 60 * 1000;
         }
     };

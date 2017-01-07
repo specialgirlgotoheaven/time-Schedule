@@ -36,7 +36,7 @@ if (typeof jQuery === 'undefined') {
         this.minute_per_graduation=null,
         this.init(element, options);
         return this;
-    }
+    };
     TimeSlider.DEFAULTS = {
         start_timestamp: (new Date("2016-12-19 00:00:00")).getTime(),   // left border //(new Date(this.static_date_string)).getTime()
         current_timestamp: (new Date(this.static_date_string)).getTime(), // current timestamp
@@ -62,7 +62,6 @@ if (typeof jQuery === 'undefined') {
         on_dblclick_ruler_callback: null,
         on_move_ruler_callback: null,
         on_change_ruler_callback: null,
-
         draw_new_timecell_flag:null,
         draw_new_timecell_start_x:null,
         static_time:24,//固定24小时

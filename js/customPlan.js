@@ -66,8 +66,6 @@
 
                     //一定要先清空后全选,这里代码逻辑上面已经清空,这里不做清空处理
                     //$("#"+tempId).data().timeslider.selectTheRowAll();
-
-
                 }
 
             });
