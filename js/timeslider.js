@@ -338,7 +338,11 @@ if (typeof jQuery === 'undefined') {
 
             function(e){
                 _this.draw_new_timecell_mousedown = true;
-                _this.draw_new_timecell2(e);
+                console.log(_this.get_cursor_x_position(e));
+                if(_this.get_cursor_x_position(e) < 840){
+                    _this.draw_new_timecell2(e);
+                }
+                
                 if(e.button ==2){
                     //console.log("你点了右键");
                 }
