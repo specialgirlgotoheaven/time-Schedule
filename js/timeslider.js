@@ -52,6 +52,7 @@ if (typeof jQuery === 'undefined') {
         this.by_dialog_edit = null,
         this.rulerLeftFlagBorder = false,
         this.rulerRightFlagBorder = false,
+        this.mergeFlag = false;
         this.init(element, options);
         return this;
     };
@@ -341,6 +342,12 @@ if (typeof jQuery === 'undefined') {
                 if(e.button ==2){
                     //console.log("你点了右键");
                 }
+/*                console.log("344");
+                console.log(_this.get_all_timecells());
+                var mergeResultArr = _this.mergeTimeCells(_this.get_all_timecells());
+                console.log(mergeResultArr);
+                _this.remove_all_timecells();
+                _this.displayTimecells(mergeResultArr)*/
             }
         );
 
@@ -518,7 +525,7 @@ if (typeof jQuery === 'undefined') {
         this.add_cell(tempTimecell);
     }
     TimeSlider.prototype.edit_timecell = function(options,_this) {
-        console.log("edit_timecell")
+        //console.log("edit_timecell")
         if (! options['_id'] || (! options['start'] && ! options['stop'])) {
             return;
         }
@@ -556,19 +563,40 @@ if (typeof jQuery === 'undefined') {
         }
     };
     TimeSlider.prototype.displayTimecells = function(TimecellArr){
+        var _this = this;
         var resultTimeCell = [];
         for(var i = 0;i < TimecellArr.length;i++){
-            if(TimecellArr[i]._id == undefined){
-                TimecellArr[i]._id = "displayTimecells"+Math.floor(Math.random()*10000);
-            }
-            resultTimeCell[i] = {};
-            resultTimeCell[i]._id = TimecellArr[i]._id;
-            resultTimeCell[i].start = new Date(this.static_date +" "+TimecellArr[i].start).getTime();
-            resultTimeCell[i].stop = new Date(this.static_date +" "+TimecellArr[i].stop).getTime();
+            (function (i) {
+                if(TimecellArr[i]._id == undefined){
+                    TimecellArr[i]._id = "displayTimecells"+Math.floor(Math.random()*10000);
+                }
+                resultTimeCell[i] = {};
+                resultTimeCell[i]._id = TimecellArr[i]._id;
+                resultTimeCell[i].start = new Date(_this.static_date +" "+TimecellArr[i].start).getTime();
+                resultTimeCell[i].stop = new Date(_this.static_date +" "+TimecellArr[i].stop).getTime();
+            })(i);
         }
         this.add_cells(resultTimeCell);
     }
-    TimeSlider.prototype.get_all_timecells=function(){
+    TimeSlider.prototype.InnerDisplayTimecells = function(TimecellArr){
+        //this.draw_new_timecell_flag = false;
+        this.mergeFlag = true;
+        var _this = this;
+        var resultTimeCell = [];
+        for(var i = 0;i < TimecellArr.length;i++){
+            (function (i) {
+                if(TimecellArr[i]._id == undefined){
+                    TimecellArr[i]._id = "displayTimecells"+Math.floor(Math.random()*10000);
+                }
+                resultTimeCell[i] = {};
+                resultTimeCell[i]._id = TimecellArr[i]._id;
+                resultTimeCell[i].start = TimecellArr[i].start;
+                resultTimeCell[i].stop = TimecellArr[i].stop;
+            })(i);
+        }
+        this.add_cells(resultTimeCell);
+    }
+    TimeSlider.prototype.get_all_timecells = function(){
         var timecells = [];
         var $timecells = this.$ruler.children('.timecell');
         $timecells.each(function (index) {
@@ -804,10 +832,12 @@ if (typeof jQuery === 'undefined') {
             start = 'start_timestamp="' + (timecell['start']).toString() + '"';
             stop = '';
             width = ((timecell['stop'] ? (timecell['stop']) : this.options.current_timestamp) - (timecell['start'])) * this.px_per_ms;
-            if(this.options.draw_new_timecell_flag){
+            if(this.options.draw_new_timecell_flag && !this.mergeFlag){
+                //console.log("this.options.draw_new_timecell_flag true");
                 //debugger
                 left = this.options.draw_new_timecell_start_x - this.getElementLeft(_this.$element[0]);
             }else{
+                //console.log("this.options.draw_new_timecell_flag false");
                 left = (((timecell['start']) - this.options.start_timestamp) * this.px_per_ms);
             }
             if (timecell['stop']) {
@@ -1107,10 +1137,12 @@ if (typeof jQuery === 'undefined') {
             timecell['stop'] = new_stop;
             if ((new_start - this.options.start_timestamp) >0 && new_stop < parseInt(new Date(this.static_date + " 23:59:59").getTime())){
                 this._edit_time_cell(timecell);
+                this.merge();
             }
             if (typeof this.options.on_move_timecell_callback == 'function') {
                 this.options.on_move_timecell_callback(id, new_start, new_stop);
             }
+
         }
         // resize left border
         else if (this.time_cell_selected.l_prompt) {
@@ -1118,6 +1150,7 @@ if (typeof jQuery === 'undefined') {
             timecell['l_prompt'] = this.time_cell_selected.l_prompt;
             timecell['start'] = new_start;
             this._edit_time_cell(timecell);
+            this.merge();
             if (typeof this.options.on_resize_timecell_callback == 'function') {
                 this.options.on_resize_timecell_callback(
                     id,
@@ -1134,6 +1167,7 @@ if (typeof jQuery === 'undefined') {
             timecell['r_prompt'] = this.time_cell_selected.r_prompt;
             timecell['stop'] = new_stop;
             this._edit_time_cell(timecell);
+            this.merge();
             if (typeof this.options.on_resize_timecell_callback == 'function') {
                 this.options.on_resize_timecell_callback(
                     id,
@@ -1221,7 +1255,9 @@ if (typeof jQuery === 'undefined') {
                             }
                             _this.time_cell_selected.t_element.removeClass('moving');
                             _this.time_cell_selected = null;
+
                         }
+
                         break;
 
                     case 'ruler':
@@ -1240,6 +1276,14 @@ if (typeof jQuery === 'undefined') {
             }
         }
     };
+    TimeSlider.prototype.merge = function () {
+        var _this = this;
+        //console.log('1225');
+        //console.log(_this.get_all_timecells());
+        var mergeResultArr = _this.mergeTimeCells(_this.get_all_timecells());
+        //console.log(mergeResultArr);
+        _this.InnerDisplayTimecells(mergeResultArr);
+    }
 
     TimeSlider.prototype.ruler_mouse_down_event = function() {
         var _this = this;
@@ -1256,7 +1300,38 @@ if (typeof jQuery === 'undefined') {
             }
         }
     };
+    TimeSlider.prototype.mergeTimeCells = function (arr) {
+        var _this = this;
+        if(arr.length <= 1){
+            return arr ;
+        }else{
+            var newArr = [];var j = 0;
+            for(var i=0;i < arr.length - 1;i++){
+                if(arr[i].stop < arr[i+1].start){
+                    //newArr[j++].push(arr[i]);
+                    if(i == arr.length - 1){
+                        //newArr[j++].push(arr[i+1]);
+                    }
+                    continue;
+                }else{
+                    _this.remove_all_timecells();
+/*                    var tempObj = {};
+                    tempObj.start = arr[i].start;
+                    tempObj.stop = arr[i+1].stop;*/
+                    arr[i+1].start = arr[i].start;
+                    if(arr[i].stop >= arr[i+1].stop){
+                        arr[i+1].stop = arr[i].stop;
+                    }else{
 
+                    }
+                    arr.baoremove(i);
+                    //newArr[j++].push(tempObj);
+                }
+
+            }
+            return arr;
+        }
+    }
 
     // TIMESLIDER PLUGIN DEFINITION
     // ============================
@@ -1312,7 +1387,18 @@ if (typeof jQuery === 'undefined') {
         return this;
     };
 
-
+    /*
+     　 *　方法:Array.baoremove(dx)
+     　 *　功能:删除数组元素.
+     　 *　参数:dx删除元素的下标.
+     　 *　返回:在原数组上修改数组.
+     　 */
+    //也可以用splice来实现.
+    Array.prototype.baoremove = function(dx)
+    { // www.jb51.net
+        if(isNaN(dx)||dx>this.length){return false;}
+        this.splice(dx,1);
+    }
     //$('#slider456').data().timeslider.get_all_timecells();
     //$('#slider123').TimeSlider("add",{_id:"vccc2",start:new Date().getTime(),stop:new Date().getTime()+1000000})
 })(jQuery);
