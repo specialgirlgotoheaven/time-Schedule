@@ -25,7 +25,7 @@
         this.options = $.extend({},defaults,opt);
         this.$element = $(element);
         this.currentType = null;
-        this.resultObj = {};
+        //this.resultObj = {};
         this.init();
         this.bind();
     };
