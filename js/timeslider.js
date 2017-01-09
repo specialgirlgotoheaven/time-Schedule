@@ -342,7 +342,7 @@ if (typeof jQuery === 'undefined') {
                 if(_this.get_cursor_x_position(e) < 840){
                     _this.draw_new_timecell2(e);
                 }
-                
+
                 if(e.button ==2){
                     //console.log("你点了右键");
                 }
@@ -583,7 +583,7 @@ if (typeof jQuery === 'undefined') {
         this.add_cells(resultTimeCell);
     }
     TimeSlider.prototype.InnerDisplayTimecells = function(TimecellArr){
-        //this.draw_new_timecell_flag = false;
+        this.draw_new_timecell_flag = false;
         this.mergeFlag = true;
         var _this = this;
         var resultTimeCell = [];
