@@ -95,10 +95,12 @@ if (typeof jQuery === 'undefined') {
             '<div class="bg-event' + (this.options.ruler_enable_move ? '' : 'disable-move') + '"></div>'
         );
         this.add_graduations();
+        
         //this.px_per_graduation = this.minute_per_graduation * 60 * 1000 * this.px_per_ms;
 /*        if(this.options.show_time_cursor){
             this.add_time_caret();
         }*/
+
         if (this.options.init_cells) {
             if (typeof this.options.init_cells == 'function') {
                 this.options.init_cells.bind(this).call();
