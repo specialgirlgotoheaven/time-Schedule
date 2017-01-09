@@ -39,20 +39,20 @@ if (typeof jQuery === 'undefined') {
         this.mark = 0;
         this.greate_graduation_count = 0;
         this.draw_new_timecell_obj = null,
-        this.draw_new_timecell_id = null,
-        this.draw_new_timecell_mousedown = null,
-        this.draw_new_timecell_select_obj = null,
-        this.prev_draw_new_cursor_x = null,
-        this.delete_once = null,
-        this.dialogInputValueObj = {},
-        this.current_dbclick_timecell = {},
-        this.current_dbclick_timecell_id = null,
-        this.minute_per_graduation=null,
-        this.px_per_graduation = null,//每个刻度有多少像素
-        this.by_dialog_edit = null,
-        this.rulerLeftFlagBorder = false,
-        this.rulerRightFlagBorder = false,
-        this.mergeFlag = false;
+            this.draw_new_timecell_id = null,
+            this.draw_new_timecell_mousedown = null,
+            this.draw_new_timecell_select_obj = null,
+            this.prev_draw_new_cursor_x = null,
+            this.delete_once = null,
+            this.dialogInputValueObj = {},
+            this.current_dbclick_timecell = {},
+            this.current_dbclick_timecell_id = null,
+            this.minute_per_graduation=null,
+            this.px_per_graduation = null,//每个刻度有多少像素
+            this.by_dialog_edit = null,
+            this.rulerLeftFlagBorder = false,
+            this.rulerRightFlagBorder = false,
+            this.mergeFlag = false;
         this.init(element, options);
         return this;
     };
@@ -189,18 +189,18 @@ if (typeof jQuery === 'undefined') {
             }
         });
     };
-/*    TimeSlider.prototype.selectTheRowAll = function(){
-        console.log("TimeSlider 全选");
-        var id = "selectAll"+Math.ceil(Math.random() * 10000);
-        var start = new Date(this.static_date +" 23:59:59").getTime();
-        var stop = new Date(this.static_date +" 23:59:59").getTime();
+    /*    TimeSlider.prototype.selectTheRowAll = function(){
+     console.log("TimeSlider 全选");
+     var id = "selectAll"+Math.ceil(Math.random() * 10000);
+     var start = new Date(this.static_date +" 23:59:59").getTime();
+     var stop = new Date(this.static_date +" 23:59:59").getTime();
 
-        var tempTimeCell = {};
-        tempTimeCell._id = id;
-        tempTimeCell.start = start;
-        tempTimeCell.stop = stop;
-        this.edit_timecell(tempTimeCell,this);
-    };*/
+     var tempTimeCell = {};
+     tempTimeCell._id = id;
+     tempTimeCell.start = start;
+     tempTimeCell.stop = stop;
+     this.edit_timecell(tempTimeCell,this);
+     };*/
 
     TimeSlider.prototype.get_defaults = function() {
         return TimeSlider.DEFAULTS;
@@ -338,20 +338,24 @@ if (typeof jQuery === 'undefined') {
 
             function(e){
                 _this.draw_new_timecell_mousedown = true;
-                console.log(_this.get_cursor_x_position(e));
-                if(_this.get_cursor_x_position(e) < 840){
+                console.log("left:");
+                console.log(_this.get_cursor_x_position(e) - _this.getElementLeft(_this.$element[0]));
+/*                if(_this.get_cursor_x_position(e) < 840){
+                    _this.draw_new_timecell2(e);
+                }*/
+                if((_this.get_cursor_x_position(e) - _this.getElementLeft(_this.$element[0])) < 768){
                     _this.draw_new_timecell2(e);
                 }
 
                 if(e.button ==2){
                     //console.log("你点了右键");
                 }
-/*                console.log("344");
-                console.log(_this.get_all_timecells());
-                var mergeResultArr = _this.mergeTimeCells(_this.get_all_timecells());
-                console.log(mergeResultArr);
-                _this.remove_all_timecells();
-                _this.displayTimecells(mergeResultArr)*/
+                /*                console.log("344");
+                 console.log(_this.get_all_timecells());
+                 var mergeResultArr = _this.mergeTimeCells(_this.get_all_timecells());
+                 console.log(mergeResultArr);
+                 _this.remove_all_timecells();
+                 _this.displayTimecells(mergeResultArr)*/
             }
         );
 
@@ -1319,9 +1323,9 @@ if (typeof jQuery === 'undefined') {
                     continue;
                 }else{
                     _this.remove_all_timecells();
-/*                    var tempObj = {};
-                    tempObj.start = arr[i].start;
-                    tempObj.stop = arr[i+1].stop;*/
+                    /*                    var tempObj = {};
+                     tempObj.start = arr[i].start;
+                     tempObj.stop = arr[i+1].stop;*/
                     arr[i+1].start = arr[i].start;
                     if(arr[i].stop >= arr[i+1].stop){
                         arr[i+1].stop = arr[i].stop;
